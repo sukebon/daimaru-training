@@ -69,7 +69,7 @@ export default function Sidebar() {
         <ListItemIcon>
           <InboxIcon />
         </ListItemIcon>
-        <ListItemText primary='セクハラの種類' />
+        <ListItemText primary='ハラスメントの種類' />
         {open ? <ExpandLess /> : <ExpandMore />}
       </ListItemButton>
       <Collapse in={open} timeout='auto' unmountOnExit>

@@ -11,7 +11,6 @@ const Home: NextPage = () => {
   const router = useRouter();
   const [currentUser, setCurrentUser] = useRecoilState(authState);
 
-  console.log(currentUser);
   useEffect(() => {
     if (!currentUser) {
       console.log(currentUser);

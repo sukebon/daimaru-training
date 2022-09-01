@@ -14,13 +14,17 @@ const Layout: NextPage<Props> = ({ children }) => {
   const router = useRouter();
   return (
     <Box display='flex' bgcolor='#f5f5f5'>
-      <Sidebar />
-      <Box flexGrow={1}>
-        {router.pathname !== '/login' && router.pathname !== '/register' && (
-          <Header />
-        )}
-        {children}
-      </Box>
+      {router.pathname !== '/login' && router.pathname !== '/register' ? (
+        <>
+          <Sidebar />
+          <Box flexGrow={1}>
+            <Header />
+            {children}
+          </Box>
+        </>
+      ) : (
+        children
+      )}
     </Box>
   );
 };
