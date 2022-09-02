@@ -1,32 +1,32 @@
-import * as React from 'react';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import Menu from '@mui/material/Menu';
-import MenuIcon from '@mui/icons-material/Menu';
-import Container from '@mui/material/Container';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
-import MenuItem from '@mui/material/MenuItem';
-import SettingsIcon from '@mui/icons-material/Settings';
-import { signOut } from 'firebase/auth';
-import { auth } from '../../firebase';
-import { useRecoilState } from 'recoil';
-import { authState } from '../../store';
-import Link from 'next/link';
+import * as React from "react";
+import AppBar from "@mui/material/AppBar";
+import Box from "@mui/material/Box";
+import Toolbar from "@mui/material/Toolbar";
+import IconButton from "@mui/material/IconButton";
+import Typography from "@mui/material/Typography";
+import Menu from "@mui/material/Menu";
+import MenuIcon from "@mui/icons-material/Menu";
+import Container from "@mui/material/Container";
+import Avatar from "@mui/material/Avatar";
+import Button from "@mui/material/Button";
+import Tooltip from "@mui/material/Tooltip";
+import MenuItem from "@mui/material/MenuItem";
+import SettingsIcon from "@mui/icons-material/Settings";
+import { signOut } from "firebase/auth";
+import { auth } from "../../firebase";
+import { useRecoilState } from "recoil";
+import { authState } from "../../store";
+import Link from "next/link";
 
-const settings = ['作成', 'Logout'];
+const settings = ["作成", "Logout"];
 
 const Header = () => {
   const [currentUser, setCurrentUser] = useRecoilState(authState);
   const onSignOut = () => {
     signOut(auth)
       .then(() => {
-        console.log('logout');
-        setCurrentUser('');
+        console.log("logout");
+        setCurrentUser("");
       })
       .catch((err) => {});
   };
@@ -53,26 +53,30 @@ const Header = () => {
   };
 
   return (
-    <AppBar position='static'>
-      <Container maxWidth='xl'>
-        <Toolbar disableGutters sx={{ height: '64px' }}>
-          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
+    <AppBar position="static">
+      <Container maxWidth="xl">
+        <Toolbar disableGutters sx={{ height: "64px" }}>
+          <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
             <IconButton
-              size='large'
-              aria-label='account of current user'
-              aria-controls='menu-appbar'
-              aria-haspopup='true'
+              size="large"
+              aria-label="account of current user"
+              aria-controls="menu-appbar"
+              aria-haspopup="true"
               onClick={handleOpenNavMenu}
-              color='inherit'
+              color="inherit"
             >
               <MenuIcon />
             </IconButton>
           </Box>
           <Typography
-            variant='h6'
+            variant="h6"
             noWrap
-            component='div'
-            sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}
+            component="div"
+            sx={{
+              flexGrow: 1,
+              display: { xs: "flex", md: "none" },
+              justifyContent: "center",
+            }}
           >
             大丸白衣 研修サイト
           </Typography>
@@ -80,38 +84,38 @@ const Header = () => {
           <Box
             sx={{
               flexGrow: 0,
-              display: 'flex',
-              alignItems: 'center',
+              display: "flex",
+              alignItems: "center",
             }}
           >
-            <Tooltip title='メニュー'>
+            <Tooltip title="メニュー">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <SettingsIcon fontSize='large' sx={{ color: 'white' }} />
+                <SettingsIcon fontSize="large" sx={{ color: "white" }} />
               </IconButton>
             </Tooltip>
             <Menu
-              sx={{ mt: '35px' }}
-              id='menu-appbar'
+              sx={{ mt: "35px" }}
+              id="menu-appbar"
               anchorEl={anchorElUser}
               anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
+                vertical: "top",
+                horizontal: "right",
               }}
               keepMounted
               transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
+                vertical: "top",
+                horizontal: "right",
               }}
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
               <MenuItem onClick={handleCloseUserMenu}>
-                <Link href='/posts/new'>
-                  <Typography textAlign='center'>作成</Typography>
+                <Link href="/posts/new">
+                  <Typography textAlign="center">作成</Typography>
                 </Link>
               </MenuItem>
               <MenuItem onClick={handleCloseUserMenu}>
-                <Typography onClick={onSignOut} textAlign='center'>
+                <Typography onClick={onSignOut} textAlign="center">
                   ログアウト
                 </Typography>
               </MenuItem>
