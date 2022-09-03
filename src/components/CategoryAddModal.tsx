@@ -1,12 +1,10 @@
-import { Button, Modal, TextField, Typography } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
 import * as React from 'react';
-import { Box } from '@mui/system';
+import { NextPage } from 'next';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../firebase';
-import { NextPage } from 'next';
-import { useRecoilValue } from 'recoil';
-import { categoriesState } from '../../store';
+import { Box } from '@mui/system';
+import { Button, Modal, TextField, Typography } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 
 type Props = {
   title: string;
@@ -24,7 +22,6 @@ const CategoryModal: NextPage<Props> = ({
   categoryId,
   setCategoryId,
 }) => {
-  const categories: any = useRecoilValue(categoriesState); // カテゴリー一覧
   const [inputName, setInputName] = React.useState('');
   // モーダルの変数と関数
   const [open, setOpen] = React.useState(false);

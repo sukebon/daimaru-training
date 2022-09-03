@@ -32,7 +32,6 @@ const Home: NextPage = () => {
         }))
       );
     });
-    console.log('setCategories');
   }, [setCategories]);
 
   // サブカテゴリー一覧を取得
@@ -45,7 +44,7 @@ const Home: NextPage = () => {
         }))
       );
     });
-  }, []);
+  }, [setSubCategories]);
 
   return (
     <div>
