@@ -1,155 +1,137 @@
-import { Button, Grid, Modal, TextField, Typography } from "@mui/material";
-import { Box, Container } from "@mui/system";
-import AddIcon from "@mui/icons-material/Add";
-import { addDoc, collection, doc, getDocs } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
-import { db } from "../../../firebase";
+import { Grid, Typography } from '@mui/material';
+import { Box, Container } from '@mui/system';
+import AddIcon from '@mui/icons-material/Add';
+import React, { useEffect, useState } from 'react';
+import { useRecoilValue } from 'recoil';
+import { categoriesState, subCategoriesState } from '../../../store';
+import CategoryModal from '../../components/CategoryModal';
+import Link from 'next/link';
 
 const CreateCategory = () => {
-  const [categoryName, setCategoryName] = useState("");
-  const [categorySlug, setCategorySlug] = useState("");
-  const [categorys, setCategorys] = useState<any>([]);
-  const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const [categoryId, setCategoryId] = useState(''); // カテゴリーのID;
+  const categories: any = useRecoilValue(categoriesState); // カテゴリー一覧
+  const subCategories: any = useRecoilValue(subCategoriesState); // サブカテゴリー一覧
+  const [filterSubCategories, setFilterSubCategories] = useState<any>([]); // 絞り込みをしたサブカテゴリー一覧
 
-  // カテゴリー登録
-  const addCategory = async () => {
-    const docRef = await addDoc(collection(db, "categorys"), {
-      name: categoryName,
-      slug: categorySlug,
-    });
-  };
-
-  // カテゴリー一覧を取得
+  // サブカテゴリーリストの初期値
   useEffect(() => {
-    const getCategorys = async () => {
-      const querySnapshot = await getDocs(collection(db, "categorys"));
-      setCategorys(
-        querySnapshot.docs.map((doc) => ({
-          ...doc.data(),
-        }))
-      );
-    };
-    getCategorys();
-  }, []);
+    const id =
+      categoryId || (categories && categories[0] && categories[0].id) || null;
+    if (!id) return;
+    const newArray = subCategories.filter(
+      (category: { id: string; parentId: string }) => {
+        if (id === category.parentId) return category;
+      }
+    );
+    setFilterSubCategories(newArray);
+    if (!categoryId) setCategoryId(categories[0].id);
+  }, [categoryId, categories, subCategories]);
+
+  // カテゴリーを選択して「サブカテゴリーをフィルターした一覧」を取得
+  const handleChecked = (id: string) => {
+    const newArray = subCategories.filter(
+      (category: { id: string; parentId: string }) => {
+        if (id === category.parentId) return category;
+      }
+    );
+    setCategoryId(id);
+    setFilterSubCategories(newArray);
+  };
 
   return (
     <>
-      <Container maxWidth="lg">
+      <Container maxWidth='lg'>
         <Box sx={{ flexGrow: 1 }} mt={12}>
-          <Grid container spacing={0} border="1px solid #eee" bgcolor="white">
-            <Grid item xs={4} borderRight="1px solid #f4f4f4">
-              <Box p={2} bgcolor="white" borderBottom="1px solid #f4f4f4">
+          <Grid container spacing={0} border='1px solid #eee' bgcolor='white'>
+            <Grid item xs={4} borderRight='1px solid #f4f4f4'>
+              <Box p={2} bgcolor='white' borderBottom='1px solid #f4f4f4'>
                 カテゴリー
               </Box>
               <Box>
-                <Typography
-                  p={2}
-                  display="flex"
-                  alignItems="center"
-                  color="primary"
-                  sx={{ cursor: "pointer" }}
-                  onClick={handleOpen}
-                >
-                  <AddIcon color="primary" />
-                  カテゴリーを追加
-                </Typography>
+                <CategoryModal
+                  title={'カテゴリー'}
+                  collectionName={'categories'}
+                  funcSelect={1}
+                  categoryId={categoryId}
+                  setCategoryId={setCategoryId}
+                  handleChecked={handleChecked}
+                />
               </Box>
-              <Box component="ul">
-                {categorys.map((category: any, index: number) => (
+              <Box component='ul' p={0}>
+                {categories.map(
+                  (category: { id: string; name: string }, index: number) => (
+                    <Box
+                      key={index}
+                      component='li'
+                      p={1}
+                      pl={6}
+                      sx={{
+                        cursor: 'pointer',
+                        listStyle: 'none',
+                        backgroundColor:
+                          categoryId === category.id ? '#f4f4f4' : '',
+                      }}
+                      onClick={() => handleChecked(category.id)}
+                    >
+                      {category.name}
+                    </Box>
+                  )
+                )}
+              </Box>
+            </Grid>
+            <Grid item xs={4} borderRight='1px solid #f4f4f4'>
+              <Box p={2} bgcolor='white' borderBottom='1px solid #f4f4f4'>
+                サブカテゴリー
+              </Box>
+              <Box>
+                <CategoryModal
+                  title={'サブカテゴリー'}
+                  collectionName={'subCategories'}
+                  funcSelect={2}
+                  categoryId={categoryId}
+                  setCategoryId={setCategoryId}
+                  handleChecked={handleChecked}
+                />
+              </Box>
+              <Box component='ul'>
+                {filterSubCategories.map((category: any, index: number) => (
                   <Box
                     key={index}
-                    component="li"
+                    component='li'
                     p={1}
-                    sx={{ listStyle: "none" }}
+                    sx={{ listStyle: 'none' }}
                   >
                     {category.name}
                   </Box>
                 ))}
               </Box>
             </Grid>
-            <Grid item xs={4} borderRight="1px solid #f4f4f4">
-              <Box p={2} bgcolor="white" borderBottom="1px solid #f4f4f4">
-                サブカテゴリー
-              </Box>
-            </Grid>
             <Grid item xs={4}>
-              <Box p={2} bgcolor="white" borderBottom="1px solid #f4f4f4">
+              <Box p={2} bgcolor='white' borderBottom='1px solid #f4f4f4'>
                 記事一覧
+              </Box>
+              <Box>
+                <Link href={'posts/new'}>
+                  <a>
+                    <Typography
+                      p={2}
+                      display='flex'
+                      alignItems='center'
+                      color='primary'
+                      sx={{ cursor: 'pointer' }}
+                    >
+                      <AddIcon color='primary' />
+                      記事を追加
+                    </Typography>
+                  </a>
+                </Link>
               </Box>
             </Grid>
           </Grid>
         </Box>
       </Container>
-      <div>
-        <Modal
-          open={open}
-          onClose={handleClose}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
-        >
-          <Box sx={style}>
-            <Typography component="h3" sx={{ mb: 2 }}>
-              カテゴリー登録
-            </Typography>
-            <TextField
-              id="outlined-basic"
-              label="カテゴリー名"
-              variant="outlined"
-              size="small"
-              value={categoryName}
-              onChange={(e) => setCategoryName(e.target.value)}
-              sx={{ mb: 2 }}
-            />
-            <TextField
-              id="outlined-basic"
-              label="スラッグ"
-              variant="outlined"
-              size="small"
-              value={categorySlug}
-              onChange={(e) => setCategorySlug(e.target.value)}
-              sx={{ mb: 2 }}
-            />
-            <Box display="flex" justifyContent="flex-end">
-              <Button
-                variant="contained"
-                onClick={handleClose}
-                color={"inherit"}
-                sx={{ mr: 1 }}
-              >
-                キャンセル
-              </Button>
-              <Button
-                variant="contained"
-                onClick={() => {
-                  addCategory();
-                  handleClose();
-                }}
-              >
-                登録
-              </Button>
-            </Box>
-          </Box>
-        </Modal>
-      </div>
     </>
   );
 };
 
 export default CreateCategory;
-
-const style = {
-  position: "absolute" as "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  display: "flex",
-  flexDirection: "column",
-  width: 400,
-  outline: "none",
-  bgcolor: "white",
-  borderRadius: "5px",
-  boxShadow: 24,
-  p: 4,
-};

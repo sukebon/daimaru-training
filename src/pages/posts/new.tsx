@@ -14,17 +14,9 @@ import { authState } from '../../../store';
 const New = () => {
   const [title, setTitle] = useState('');
   const router = useRouter();
-  const [currentUser, setCurrentUser] = useRecoilState(authState);
-
-  useEffect(() => {
-    if (!currentUser) {
-      console.log(currentUser);
-      router.push('/login');
-    }
-  }, [currentUser, router]);
 
   return (
-    <Container maxWidth='sm'>
+    <Container maxWidth='md'>
       <Box component='h1'>作成する</Box>
       <FormControl fullWidth>
         <InputLabel htmlFor='outlined-adornment-amount'>タイトル</InputLabel>
@@ -45,7 +37,8 @@ const New = () => {
             height: '200px',
             borderRadius: 3,
             outline: 'none',
-            fontSize: '12px',
+            font: 'inherit',
+            padding: '16.5px 14px',
           }}
         />
       </FormControl>

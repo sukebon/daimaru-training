@@ -12,8 +12,12 @@ import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import StarBorder from '@mui/icons-material/StarBorder';
 import { Typography } from '@mui/material';
+import { useRecoilState } from 'recoil';
+import { categoriesState } from '../../store';
+import SidebarList from './SidebarList';
 
 export default function Sidebar() {
+  const [categories, setCategories]: any = useRecoilState(categoriesState); // カテゴリー一覧
   const pages = [
     'セクシャルハラスメント',
     'パワーハラスメント',
@@ -58,32 +62,9 @@ export default function Sidebar() {
         </ListSubheader>
       }
     >
-      <ListItemButton>
-        <ListItemIcon>
-          <SendIcon />
-        </ListItemIcon>
-        <ListItemText primary='セクハラの定義' />
-      </ListItemButton>
-
-      <ListItemButton onClick={handleClick}>
-        <ListItemIcon>
-          <InboxIcon />
-        </ListItemIcon>
-        <ListItemText primary='ハラスメントの種類' />
-        {open ? <ExpandLess /> : <ExpandMore />}
-      </ListItemButton>
-      <Collapse in={open} timeout='auto' unmountOnExit>
-        <List component='div' disablePadding>
-          {pages.map((page) => (
-            <ListItemButton key={page} sx={{ pl: 4 }}>
-              <ListItemIcon>
-                <StarBorder />
-              </ListItemIcon>
-              <ListItemText primary={page} />
-            </ListItemButton>
-          ))}
-        </List>
-      </Collapse>
+      {categories.map((category: { id: string; name: string }) => (
+        <SidebarList key={category.id} category={category} />
+      ))}
     </List>
   );
 }
