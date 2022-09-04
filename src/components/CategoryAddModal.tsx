@@ -12,7 +12,6 @@ type Props = {
   funcSelect: number;
   categoryId: string;
   setCategoryId: any;
-  handleChecked: any;
 };
 
 const CategoryModal: NextPage<Props> = ({
@@ -41,7 +40,7 @@ const CategoryModal: NextPage<Props> = ({
     } else if (id === 2) {
       const docRef = await addDoc(collection(db, collectionName), {
         name: inputName,
-        parentId: categoryId || null,
+        categoryId: categoryId || null,
         createdAt: serverTimestamp(),
       });
     }

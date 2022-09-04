@@ -7,10 +7,12 @@ import Collapse from '@mui/material/Collapse';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
-import StarBorder from '@mui/icons-material/StarBorder';
+import ArticleIcon from '@mui/icons-material/Article';
+import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import { NextPage } from 'next';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { subCategoriesState } from '../../store';
+import Link from 'next/link';
 
 type Props = {
   category: { id: string; name: string };
@@ -26,8 +28,8 @@ const SidebarList: NextPage<Props> = ({ category }) => {
 
   React.useEffect(() => {
     const newArray = subCategories.filter(
-      (subCategory: { id: string; parentId: string }) => {
-        if (category.id === subCategory.parentId) return subCategory;
+      (subCategory: { id: string; categoryId: string }) => {
+        if (category.id === subCategory.categoryId) return subCategory;
       }
     );
     setFilterSubCategories(newArray);
@@ -37,7 +39,7 @@ const SidebarList: NextPage<Props> = ({ category }) => {
     <div key={category.id}>
       <ListItemButton onClick={handleClick}>
         <ListItemIcon>
-          <InboxIcon />
+          <ArticleIcon />
         </ListItemIcon>
         <ListItemText primary={category.name} />
         {open ? <ExpandLess /> : <ExpandMore />}
@@ -45,12 +47,16 @@ const SidebarList: NextPage<Props> = ({ category }) => {
       <Collapse in={open} timeout='auto' unmountOnExit>
         <List component='div' disablePadding>
           {filterSubCategories.map((page: { id: string; name: string }) => (
-            <ListItemButton key={page.id} sx={{ pl: 4 }}>
-              <ListItemIcon>
-                <StarBorder />
-              </ListItemIcon>
-              <ListItemText primary={page.name} />
-            </ListItemButton>
+            <Link key={page.id} href={`/category/${page.id}`}>
+              <a>
+                <ListItemButton sx={{ pl: 4 }}>
+                  <ListItemIcon>
+                    <ArrowRightIcon />
+                  </ListItemIcon>
+                  <ListItemText primary={page.name} />
+                </ListItemButton>
+              </a>
+            </Link>
           ))}
         </List>
       </Collapse>

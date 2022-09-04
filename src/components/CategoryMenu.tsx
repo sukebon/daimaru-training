@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import { NextPage } from 'next';
 import { useRecoilValue } from 'recoil';
-import { categoriesState, subCategoriesState } from '../../store';
+import { categoriesState, postsState, subCategoriesState } from '../../store';
 import { deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../../firebase';
 
@@ -26,6 +26,7 @@ const CategoryMenu: NextPage<Props> = ({ docId, funcSelect }) => {
   const [categoryTitle, setCategoryTitle] = useState(''); //カテゴリー名
   const categories = useRecoilValue(categoriesState); // カテゴリー一覧
   const subCategories = useRecoilValue(subCategoriesState); // サブカテゴリー一覧
+  const posts = useRecoilValue(postsState); // 記事一覧
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const openMenu = Boolean(anchorEl);
@@ -59,13 +60,19 @@ const CategoryMenu: NextPage<Props> = ({ docId, funcSelect }) => {
     if (!result) return;
     try {
       await deleteDoc(doc(db, 'categories', id));
-      let newArray = subCategories.filter(
-        (subCategory: { id: string; parentId: string }) => {
-          if (subCategory.parentId === id) return subCategory.id;
+      let newSubArray = subCategories.filter(
+        (subCategory: { id: string; categoryId: string }) => {
+          if (subCategory.categoryId === id) return subCategory.id;
         }
       );
-      newArray.forEach(async (subCategory: { id: string }) => {
+      newSubArray.forEach(async (subCategory: { id: string }) => {
         await deleteDoc(doc(db, 'subCategories', subCategory.id));
+      });
+      let newPostArray = posts.filter((post: { categoryId: string }) => {
+        if (post.categoryId === id) return post;
+      });
+      newPostArray.forEach(async (post: { id: string }) => {
+        await deleteDoc(doc(db, 'posts', post.id));
       });
     } catch (err) {
       console.log(err);

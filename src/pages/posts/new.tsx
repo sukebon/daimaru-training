@@ -41,8 +41,8 @@ const New = () => {
   // カテゴリーを選択して「サブカテゴリーをフィルターした一覧」を取得
   useEffect(() => {
     const newArray = subCategories.filter(
-      (category: { id: string; parentId: string }) => {
-        if (categoryId === category.parentId) return category;
+      (subCategory: { id: string; categoryId: string }) => {
+        if (categoryId === subCategory.categoryId) return subCategory;
       }
     );
     setFilterSubCategories(newArray);
@@ -77,7 +77,7 @@ const New = () => {
   return (
     <>
       <Container maxWidth='md'>
-        <Box width='100%' sx={{ p: 6, mt: 6, backgroundColor: 'white' }}>
+        <Box width='100%' sx={{ p: 6, pt: 1, mt: 6, backgroundColor: 'white' }}>
           <Box component='h1'>記事を作成する</Box>
           <Box display='flex' sx={{ minWidth: 120, gap: 3 }}>
             <FormControl fullWidth>

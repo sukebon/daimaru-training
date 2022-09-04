@@ -19,3 +19,8 @@ export const subCategoriesState = atom({
   key: 'subCategoriesState',
   default: [],
 });
+
+export const postsState = atom({
+  key: 'postsState',
+  default: [],
+});

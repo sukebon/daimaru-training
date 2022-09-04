@@ -25,6 +25,7 @@ const Header = () => {
   const router = useRouter();
   const [currentUser, setCurrentUser] = useRecoilState(authState);
 
+  // 未ログインの場合、login画面へ移動
   React.useEffect(() => {
     if (!currentUser) {
       console.log(currentUser);
@@ -32,6 +33,7 @@ const Header = () => {
     }
   }, [currentUser, router]);
 
+  // サインアウト
   const onSignOut = () => {
     signOut(auth)
       .then(() => {
@@ -40,6 +42,19 @@ const Header = () => {
       })
       .catch((err) => {});
   };
+
+  const headerMenu = [
+    { link: '/', title: 'トップページ' },
+    {
+      link: '/posts/new',
+      title: '記事を作成',
+    },
+    {
+      link: '/create-category',
+      title: 'カテゴリーを作成',
+    },
+  ];
+
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null
   );
@@ -119,21 +134,15 @@ const Header = () => {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              <MenuItem onClick={handleCloseUserMenu}>
-                <Link href='/'>
-                  <Typography textAlign='center'>トップページ</Typography>
+              {headerMenu.map((menu: { title: string; link: string }) => (
+                <Link key={menu.title} href={menu.link}>
+                  <a>
+                    <MenuItem onClick={handleCloseUserMenu}>
+                      <Typography textAlign='center'>{menu.title}</Typography>
+                    </MenuItem>
+                  </a>
                 </Link>
-              </MenuItem>
-              <MenuItem onClick={handleCloseUserMenu}>
-                <Link href='/posts/new'>
-                  <Typography textAlign='center'>作成</Typography>
-                </Link>
-              </MenuItem>
-              <MenuItem onClick={handleCloseUserMenu}>
-                <Link href='/create-category'>
-                  <Typography textAlign='center'>カテゴリー作成</Typography>
-                </Link>
-              </MenuItem>
+              ))}
               <MenuItem onClick={handleCloseUserMenu}>
                 <Typography onClick={onSignOut} textAlign='center'>
                   ログアウト

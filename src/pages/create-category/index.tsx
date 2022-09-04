@@ -3,31 +3,55 @@ import { useRecoilValue } from 'recoil';
 import { Grid, Typography } from '@mui/material';
 import { Box, Container } from '@mui/system';
 import AddIcon from '@mui/icons-material/Add';
-import { categoriesState, subCategoriesState } from '../../../store';
+import {
+  categoriesState,
+  postsState,
+  subCategoriesState,
+} from '../../../store';
 import CategoryAddModal from '../../components/CategoryAddModal';
 import Link from 'next/link';
 import CategoryMenu from '../../components/CategoryMenu';
 
+type categoriesState = {
+  id: string;
+  name: string;
+}[];
+
 const CreateCategory = () => {
   const [categoryId, setCategoryId] = useState(''); // カテゴリーのID;
   const [subCategoryId, setSubCategoryId] = useState(''); // サブカテゴリーのID;
-  const categories: any = useRecoilValue(categoriesState); // カテゴリー一覧
-  const subCategories: any = useRecoilValue(subCategoriesState); // サブカテゴリー一覧
+  const [postId, setPostId] = useState(''); // 記事のID
+  const categories = useRecoilValue<categoriesState>(categoriesState); // カテゴリー一覧
+  const subCategories = useRecoilValue(subCategoriesState); // サブカテゴリー一覧
+  const posts = useRecoilValue(postsState); // 記事一覧
   const [filterSubCategories, setFilterSubCategories] = useState<any>([]); // 絞り込みをしたサブカテゴリー一覧
+  const [filterPosts, setFilterPosts] = useState<any>([]); // 絞り込みをした記事一覧
 
   // サブカテゴリーリストの初期値
   useEffect(() => {
-    const id =
-      categoryId || (categories && categories[0] && categories[0].id) || null;
+    setSubCategoryId('');
+    setPostId('');
+    const id = categoryId || (categories && categories[0] && categories[0].id);
     if (!id) return;
-    const newArray = subCategories.filter(
-      (category: { id: string; parentId: string }) => {
-        if (id === category.parentId) return category;
+    const newSubArray: any = subCategories.filter(
+      (subCategory: { id: string; categoryId: string }) => {
+        if (id === subCategory.categoryId) return subCategory;
       }
     );
-    setFilterSubCategories(newArray);
+    setFilterSubCategories(newSubArray);
     if (!categoryId) setCategoryId(categories[0].id);
   }, [categoryId, categories, subCategories]);
+
+  // 記事リストの初期値
+  useEffect(() => {
+    const id = subCategoryId;
+    const newPostArray = posts.filter(
+      (post: { id: string; subCategoryId: string }) => {
+        if (id === post.subCategoryId) return post;
+      }
+    );
+    setFilterPosts(newPostArray);
+  }, [posts, subCategoryId]);
 
   // サブカテゴリーリストの一番最初に色をつける
   useEffect(() => {
@@ -35,25 +59,35 @@ const CreateCategory = () => {
       filterSubCategories &&
       filterSubCategories[0] &&
       filterSubCategories[0].id;
-    if (!id) return;
     setSubCategoryId(id);
   }, [filterSubCategories]);
+
+  // 記事リストの一番最初に色をつける
+  useEffect(() => {
+    const id = filterPosts && filterPosts[0] && filterPosts[0].id;
+    setPostId(id);
+  }, [filterPosts, subCategoryId]);
 
   // カテゴリーを選択して「サブカテゴリーをフィルターした一覧」を取得
   // カテゴリーを選択してIDを取得
   const handleCategoryChecked = (id: string) => {
-    const newArray = subCategories.filter(
-      (category: { id: string; parentId: string }) => {
-        if (id === category.parentId) return category;
+    const newSubArray = subCategories.filter(
+      (subCategory: { id: string; categoryId: string }) => {
+        if (id === subCategory.categoryId) return subCategory;
       }
     );
     setCategoryId(id);
-    setFilterSubCategories(newArray);
+    setFilterSubCategories(newSubArray);
   };
 
   // サブカテゴリーを選択してIDを取得
   const handleSubCategoryChecked = (id: string) => {
     setSubCategoryId(id);
+  };
+
+  // 記事を選択してIDを取得
+  const handlePostChecked = (id: string) => {
+    setPostId(id);
   };
 
   return (
@@ -82,7 +116,6 @@ const CreateCategory = () => {
                   funcSelect={1}
                   categoryId={categoryId}
                   setCategoryId={setCategoryId}
-                  handleChecked={handleCategoryChecked}
                 />
               </Box>
               <Box component='ul' p={0}>
@@ -117,7 +150,7 @@ const CreateCategory = () => {
                 borderBottom='1px solid #f4f4f4'
               >
                 サブカテゴリー
-                {subCategories.length !== 0 && (
+                {filterSubCategories.length !== 0 && (
                   <CategoryMenu docId={subCategoryId} funcSelect={2} />
                 )}
               </Box>
@@ -128,7 +161,6 @@ const CreateCategory = () => {
                   funcSelect={2}
                   categoryId={categoryId}
                   setCategoryId={setCategoryId}
-                  handleChecked={handleCategoryChecked}
                 />
               </Box>
               <Box component='ul' p={0}>
@@ -152,8 +184,18 @@ const CreateCategory = () => {
               </Box>
             </Grid>
             <Grid item xs={4}>
-              <Box p={2} bgcolor='white' borderBottom='1px solid #f4f4f4'>
+              <Box
+                display='flex'
+                justifyContent='space-between'
+                alignItems='center'
+                p={2}
+                bgcolor='white'
+                borderBottom='1px solid #f4f4f4'
+              >
                 記事一覧
+                {filterPosts.length !== 0 && (
+                  <CategoryMenu docId={categoryId} funcSelect={1} />
+                )}
               </Box>
               <Box>
                 <Link href={'posts/new'}>
@@ -170,6 +212,24 @@ const CreateCategory = () => {
                     </Typography>
                   </a>
                 </Link>
+              </Box>
+              <Box component='ul' p={0}>
+                {filterPosts.map((post: any, index: number) => (
+                  <Box
+                    key={index}
+                    component='li'
+                    p={1}
+                    pl={6}
+                    sx={{
+                      cursor: 'pointer',
+                      listStyle: 'none',
+                      backgroundColor: postId === post.id ? '#f4f4f4' : '',
+                    }}
+                    onClick={() => handlePostChecked(post.id)}
+                  >
+                    {post.title}
+                  </Box>
+                ))}
               </Box>
             </Grid>
           </Grid>
