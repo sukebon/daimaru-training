@@ -1,5 +1,5 @@
-import { ThemeContext } from '@emotion/react';
-import { Palette } from '@mui/icons-material';
+import { ThemeContext } from "@emotion/react";
+import { Palette } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -11,27 +11,27 @@ import {
   Select,
   TextareaAutosize,
   ThemeProvider,
-} from '@mui/material';
-import { palette } from '@mui/system';
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
-import { useRouter } from 'next/router';
-import React, { useEffect, useState } from 'react';
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
-import { db } from '../../../firebase';
+} from "@mui/material";
+import { palette } from "@mui/system";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { useRouter } from "next/router";
+import React, { useEffect, useState } from "react";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { db } from "../../../firebase";
 import {
   authState,
   categoriesState,
   spinnerState,
   subCategoriesState,
-} from '../../../store';
-import SpinnerLoading from '../../components/SpinnerLoading';
+} from "../../../store";
+import SpinnerLoading from "../../components/SpinnerLoading";
 
 const New = () => {
   const router = useRouter();
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
-  const [categoryId, setCategoryId] = React.useState('');
-  const [subCategoryId, setSubCategoryId] = React.useState('');
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [categoryId, setCategoryId] = React.useState("");
+  const [subCategoryId, setSubCategoryId] = React.useState("");
 
   const categories: any = useRecoilValue(categoriesState); // カテゴリー一覧
   const subCategories: any = useRecoilValue(subCategoriesState); // サブカテゴリー一覧
@@ -52,21 +52,21 @@ const New = () => {
   const addPost = async () => {
     setSpinner(true);
     try {
-      const docRef = await addDoc(collection(db, 'posts'), {
+      const docRef = await addDoc(collection(db, "posts"), {
         title,
         content,
         categoryId,
         subCategoryId,
         createdAt: serverTimestamp(),
       });
-      setTitle('');
-      setContent('');
-      setCategoryId('');
-      setSubCategoryId('');
+      setTitle("");
+      setContent("");
+      setCategoryId("");
+      setSubCategoryId("");
     } catch (err) {
       console.log(err);
     } finally {
-      alert('登録しました');
+      alert("登録しました");
       setSpinner(false);
     }
   };
@@ -76,17 +76,19 @@ const New = () => {
 
   return (
     <>
-      <Container maxWidth='md'>
-        <Box width='100%' sx={{ p: 6, pt: 1, mt: 6, backgroundColor: 'white' }}>
-          <Box component='h1'>記事を作成する</Box>
-          <Box display='flex' sx={{ minWidth: 120, gap: 3 }}>
+      <Container maxWidth="md">
+        <Box component="h1" mt={6} sx={{ fontSize: "1.2rem" }}>
+          記事を作成する
+        </Box>
+        <Box width="100%" bgcolor="white" p={3} border="1px solid #e1e1e1">
+          <Box display="flex" sx={{ minWidth: 120, gap: 3 }}>
             <FormControl fullWidth>
-              <InputLabel id='category-select-label'>カテゴリー選択</InputLabel>
+              <InputLabel id="category-select-label">カテゴリー選択</InputLabel>
               <Select
-                labelId='category-select-label'
-                id='demo-simple-select'
+                labelId="category-select-label"
+                id="demo-simple-select"
                 value={categoryId}
-                label='カテゴリー選択'
+                label="カテゴリー選択"
                 required
                 onChange={(e) => setCategoryId(e.target.value)}
               >
@@ -98,13 +100,13 @@ const New = () => {
               </Select>
             </FormControl>
             <FormControl fullWidth>
-              <InputLabel id='subcategory-select-label'>
+              <InputLabel id="subcategory-select-label">
                 サブカテゴリー選択
               </InputLabel>
               <Select
-                labelId='subcategory-select-label'
-                id='subcategory-select'
-                label='サブカテゴリー選択'
+                labelId="subcategory-select-label"
+                id="subcategory-select"
+                label="サブカテゴリー選択"
                 required
                 disabled={!categoryId}
                 value={subCategoryId}
@@ -121,33 +123,33 @@ const New = () => {
             </FormControl>
           </Box>
           <FormControl fullWidth sx={{ mt: 3 }}>
-            <InputLabel htmlFor='title-input'>タイトル</InputLabel>
+            <InputLabel htmlFor="title-input">タイトル</InputLabel>
             <OutlinedInput
-              id='title-input'
+              id="title-input"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              label='Amount'
+              label="Amount"
             />
           </FormControl>
           <FormControl fullWidth sx={{ mt: 3 }}>
             <TextareaAutosize
               maxRows={12}
-              aria-label='maximum height'
-              placeholder='内容'
+              aria-label="maximum height"
+              placeholder="内容"
               value={content}
               onChange={(e) => setContent(e.target.value)}
               style={{
-                minHeight: '200px',
-                resize: 'vertical',
+                minHeight: "200px",
+                resize: "vertical",
                 borderRadius: 3,
-                font: 'inherit',
-                padding: '16.5px 14px',
+                font: "inherit",
+                padding: "16.5px 14px",
               }}
             />
           </FormControl>
-          <Box width='100%' textAlign='center'>
+          <Box width="100%" textAlign="center">
             <Button
-              variant='contained'
+              variant="contained"
               sx={{ mt: 3 }}
               disabled={buttonDisabled}
               onClick={addPost}

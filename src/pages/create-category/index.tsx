@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { useRecoilValue } from 'recoil';
-import { Grid, Typography } from '@mui/material';
-import { Box, Container } from '@mui/system';
-import AddIcon from '@mui/icons-material/Add';
+import React, { useEffect, useState } from "react";
+import { useRecoilValue } from "recoil";
+import { Grid, Typography } from "@mui/material";
+import { Box, Container } from "@mui/system";
+import AddIcon from "@mui/icons-material/Add";
 import {
   categoriesState,
   postsState,
   subCategoriesState,
-} from '../../../store';
-import CategoryAddModal from '../../components/CategoryAddModal';
-import Link from 'next/link';
-import CategoryMenu from '../../components/CategoryMenu';
+} from "../../../store";
+import CategoryAddModal from "../../components/CategoryAddModal";
+import Link from "next/link";
+import CategoryMenu from "../../components/CategoryMenu";
 
 type categoriesState = {
   id: string;
@@ -18,9 +18,9 @@ type categoriesState = {
 }[];
 
 const CreateCategory = () => {
-  const [categoryId, setCategoryId] = useState(''); // カテゴリーのID;
-  const [subCategoryId, setSubCategoryId] = useState(''); // サブカテゴリーのID;
-  const [postId, setPostId] = useState(''); // 記事のID
+  const [categoryId, setCategoryId] = useState(""); // カテゴリーのID;
+  const [subCategoryId, setSubCategoryId] = useState(""); // サブカテゴリーのID;
+  const [postId, setPostId] = useState(""); // 記事のID
   const categories = useRecoilValue<categoriesState>(categoriesState); // カテゴリー一覧
   const subCategories = useRecoilValue(subCategoriesState); // サブカテゴリー一覧
   const posts = useRecoilValue(postsState); // 記事一覧
@@ -29,8 +29,8 @@ const CreateCategory = () => {
 
   // サブカテゴリーリストの初期値
   useEffect(() => {
-    setSubCategoryId('');
-    setPostId('');
+    setSubCategoryId("");
+    setPostId("");
     const id = categoryId || (categories && categories[0] && categories[0].id);
     if (!id) return;
     const newSubArray: any = subCategories.filter(
@@ -92,17 +92,25 @@ const CreateCategory = () => {
 
   return (
     <>
-      <Container maxWidth='lg'>
-        <Box sx={{ flexGrow: 1 }} mt={12}>
-          <Grid container spacing={0} border='1px solid #eee' bgcolor='white'>
-            <Grid item xs={4} borderRight='1px solid #f4f4f4'>
+      <Container maxWidth="lg">
+        <Box component="h1" mt={6} sx={{ fontSize: "1.2rem" }}>
+          カテゴリー作成
+        </Box>
+        <Box sx={{ flexGrow: 1 }}>
+          <Grid
+            container
+            spacing={0}
+            border="1px solid #e1e1e1"
+            bgcolor="white"
+          >
+            <Grid item xs={4} borderRight="1px solid #e1e1e1">
               <Box
-                display='flex'
-                justifyContent='space-between'
-                alignItems='center'
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
                 p={2}
-                bgcolor='white'
-                borderBottom='1px solid #f4f4f4'
+                bgcolor="white"
+                borderBottom="1px solid #f4f4f4"
               >
                 カテゴリー
                 {categories.length !== 0 && (
@@ -111,26 +119,26 @@ const CreateCategory = () => {
               </Box>
               <Box>
                 <CategoryAddModal
-                  title={'カテゴリー'}
-                  collectionName={'categories'}
+                  title={"カテゴリー"}
+                  collectionName={"categories"}
                   funcSelect={1}
                   categoryId={categoryId}
                   setCategoryId={setCategoryId}
                 />
               </Box>
-              <Box component='ul' p={0}>
+              <Box component="ul" p={0}>
                 {categories.map(
                   (category: { id: string; name: string }, index: number) => (
                     <Box
                       key={index}
-                      component='li'
+                      component="li"
                       p={1}
                       pl={6}
                       sx={{
-                        cursor: 'pointer',
-                        listStyle: 'none',
+                        cursor: "pointer",
+                        listStyle: "none",
                         backgroundColor:
-                          categoryId === category.id ? '#f4f4f4' : '',
+                          categoryId === category.id ? "#f4f4f4" : "",
                       }}
                       onClick={() => handleCategoryChecked(category.id)}
                     >
@@ -140,14 +148,14 @@ const CreateCategory = () => {
                 )}
               </Box>
             </Grid>
-            <Grid item xs={4} borderRight='1px solid #f4f4f4'>
+            <Grid item xs={4} borderRight="1px solid #e1e1e1">
               <Box
-                display='flex'
-                justifyContent='space-between'
-                alignItems='center'
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
                 p={2}
-                bgcolor='white'
-                borderBottom='1px solid #f4f4f4'
+                bgcolor="white"
+                borderBottom="1px solid #f4f4f4"
               >
                 サブカテゴリー
                 {filterSubCategories.length !== 0 && (
@@ -156,25 +164,25 @@ const CreateCategory = () => {
               </Box>
               <Box>
                 <CategoryAddModal
-                  title={'サブカテゴリー'}
-                  collectionName={'subCategories'}
+                  title={"サブカテゴリー"}
+                  collectionName={"subCategories"}
                   funcSelect={2}
                   categoryId={categoryId}
                   setCategoryId={setCategoryId}
                 />
               </Box>
-              <Box component='ul' p={0}>
+              <Box component="ul" p={0}>
                 {filterSubCategories.map((subCategory: any, index: number) => (
                   <Box
                     key={index}
-                    component='li'
+                    component="li"
                     p={1}
                     pl={6}
                     sx={{
-                      cursor: 'pointer',
-                      listStyle: 'none',
+                      cursor: "pointer",
+                      listStyle: "none",
                       backgroundColor:
-                        subCategoryId === subCategory.id ? '#f4f4f4' : '',
+                        subCategoryId === subCategory.id ? "#f4f4f4" : "",
                     }}
                     onClick={() => handleSubCategoryChecked(subCategory.id)}
                   >
@@ -185,12 +193,12 @@ const CreateCategory = () => {
             </Grid>
             <Grid item xs={4}>
               <Box
-                display='flex'
-                justifyContent='space-between'
-                alignItems='center'
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
                 p={2}
-                bgcolor='white'
-                borderBottom='1px solid #f4f4f4'
+                bgcolor="white"
+                borderBottom="1px solid #f4f4f4"
               >
                 記事一覧
                 {filterPosts.length !== 0 && (
@@ -198,32 +206,32 @@ const CreateCategory = () => {
                 )}
               </Box>
               <Box>
-                <Link href={'posts/new'}>
+                <Link href={"posts/new"}>
                   <a>
                     <Typography
                       p={2}
-                      display='flex'
-                      alignItems='center'
-                      color='primary'
-                      sx={{ cursor: 'pointer' }}
+                      display="flex"
+                      alignItems="center"
+                      color="primary"
+                      sx={{ cursor: "pointer" }}
                     >
-                      <AddIcon color='primary' />
+                      <AddIcon color="primary" />
                       記事を追加
                     </Typography>
                   </a>
                 </Link>
               </Box>
-              <Box component='ul' p={0}>
+              <Box component="ul" p={0}>
                 {filterPosts.map((post: any, index: number) => (
                   <Box
                     key={index}
-                    component='li'
+                    component="li"
                     p={1}
                     pl={6}
                     sx={{
-                      cursor: 'pointer',
-                      listStyle: 'none',
-                      backgroundColor: postId === post.id ? '#f4f4f4' : '',
+                      cursor: "pointer",
+                      listStyle: "none",
+                      backgroundColor: postId === post.id ? "#f4f4f4" : "",
                     }}
                     onClick={() => handlePostChecked(post.id)}
                   >
