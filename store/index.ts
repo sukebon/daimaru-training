@@ -24,3 +24,13 @@ export const postsState = atom({
   key: 'postsState',
   default: [],
 });
+
+export const activeSidebarItemState = atom({
+  key: 'activeSidebarItemState',
+  default: '',
+});
+
+export const drawerState = atom<boolean>({
+  key: 'drawerState',
+  default: false,
+});

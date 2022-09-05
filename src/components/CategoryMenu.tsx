@@ -85,6 +85,12 @@ const CategoryMenu: NextPage<Props> = ({ docId, funcSelect }) => {
     if (!result) return;
     try {
       await deleteDoc(doc(db, 'subCategories', id));
+      let newPostArray = posts.filter((post: { subCategoryId: string }) => {
+        if (post.subCategoryId === id) return post;
+      });
+      newPostArray.forEach(async (post: { id: string }) => {
+        await deleteDoc(doc(db, 'posts', post.id));
+      });
     } catch (err) {
       console.log(err);
     }
