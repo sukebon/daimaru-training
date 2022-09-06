@@ -25,6 +25,11 @@ export const postsState = atom({
   default: [],
 });
 
+export const alreadyReadListState = atom({
+  key: 'alreadyReadListState',
+  default: [],
+});
+
 export const activeSidebarItemState = atom({
   key: 'activeSidebarItemState',
   default: '',
