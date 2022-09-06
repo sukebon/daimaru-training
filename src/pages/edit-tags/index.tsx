@@ -12,6 +12,8 @@ import CategoryAddModal from '../../components/CategoryAddModal';
 import Link from 'next/link';
 import CategoryMenu from '../../components/CategoryMenu';
 
+import CategoryPost from '../../components/CategoryPost';
+
 type categoriesState = {
   id: string;
   name: string;
@@ -20,7 +22,6 @@ type categoriesState = {
 const EditTags = () => {
   const [categoryId, setCategoryId] = useState(''); // カテゴリーのID;
   const [subCategoryId, setSubCategoryId] = useState(''); // サブカテゴリーのID;
-  const [postId, setPostId] = useState(''); // 記事のID
   const categories = useRecoilValue<categoriesState>(categoriesState); // カテゴリー一覧
   const subCategories = useRecoilValue(subCategoriesState); // サブカテゴリー一覧
   const posts = useRecoilValue(postsState); // 記事一覧
@@ -30,7 +31,6 @@ const EditTags = () => {
   // サブカテゴリーリストの初期値
   useEffect(() => {
     setSubCategoryId('');
-    setPostId('');
     const id = categoryId || (categories && categories[0] && categories[0].id);
     if (!id) return;
     const newSubArray: any = subCategories.filter(
@@ -62,12 +62,6 @@ const EditTags = () => {
     setSubCategoryId(id);
   }, [filterSubCategories]);
 
-  // 記事リストの一番最初に色をつける
-  useEffect(() => {
-    const id = filterPosts && filterPosts[0] && filterPosts[0].id;
-    setPostId(id);
-  }, [filterPosts, subCategoryId]);
-
   // カテゴリーを選択して「サブカテゴリーをフィルターした一覧」を取得
   // カテゴリーを選択してIDを取得
   const handleCategoryChecked = (id: string) => {
@@ -83,11 +77,6 @@ const EditTags = () => {
   // サブカテゴリーを選択してIDを取得
   const handleSubCategoryChecked = (id: string) => {
     setSubCategoryId(id);
-  };
-
-  // 記事を選択してIDを取得
-  const handlePostChecked = (id: string) => {
-    setPostId(id);
   };
 
   return (
@@ -132,14 +121,8 @@ const EditTags = () => {
                     <Box
                       key={index}
                       component='li'
-                      p={1}
-                      pl={6}
-                      sx={{
-                        cursor: 'pointer',
-                        listStyle: 'none',
-                        backgroundColor:
-                          categoryId === category.id ? '#f4f4f4' : '',
-                      }}
+                      sx={style}
+                      bgcolor={categoryId === category.id ? '#f4f4f4' : ''}
                       onClick={() => handleCategoryChecked(category.id)}
                     >
                       {category.name}
@@ -176,14 +159,8 @@ const EditTags = () => {
                   <Box
                     key={index}
                     component='li'
-                    p={1}
-                    pl={6}
-                    sx={{
-                      cursor: 'pointer',
-                      listStyle: 'none',
-                      backgroundColor:
-                        subCategoryId === subCategory.id ? '#f4f4f4' : '',
-                    }}
+                    sx={style}
+                    bgcolor={subCategoryId === subCategory.id ? '#f4f4f4' : ''}
                     onClick={() => handleSubCategoryChecked(subCategory.id)}
                   >
                     {subCategory.name}
@@ -201,9 +178,6 @@ const EditTags = () => {
                 borderBottom='1px solid #f4f4f4'
               >
                 記事一覧
-                {filterPosts.length !== 0 && (
-                  <CategoryMenu docId={categoryId} funcSelect={1} />
-                )}
               </Box>
               <Box>
                 <Link href={'post-new'}>
@@ -222,21 +196,8 @@ const EditTags = () => {
                 </Link>
               </Box>
               <Box component='ul' p={0}>
-                {filterPosts.map((post: any, index: number) => (
-                  <Box
-                    key={index}
-                    component='li'
-                    p={1}
-                    pl={6}
-                    sx={{
-                      cursor: 'pointer',
-                      listStyle: 'none',
-                      backgroundColor: postId === post.id ? '#f4f4f4' : '',
-                    }}
-                    onClick={() => handlePostChecked(post.id)}
-                  >
-                    {post.title}
-                  </Box>
+                {filterPosts.map((post: { id: string; title: string }) => (
+                  <CategoryPost key={post.id} post={post} />
                 ))}
               </Box>
             </Grid>
@@ -248,3 +209,12 @@ const EditTags = () => {
 };
 
 export default EditTags;
+
+const style = {
+  height: '48px',
+  padding: '8px 8px 8px 48px',
+  cursor: 'pointer',
+  listStyle: 'none',
+  display: 'flex',
+  alignItems: 'center',
+};

@@ -25,20 +25,6 @@ export default function SidebarDrawer() {
       setDrawerOpen(open);
     };
 
-  const list = () => (
-    <Box
-      sx={{ width: 300 }}
-      role='presentation'
-      onKeyDown={toggleDrawer(false)}
-    >
-      <List>
-        {categories.map((category: { id: string; name: string }) => (
-          <SidebarList key={category.id} category={category} />
-        ))}
-      </List>
-    </Box>
-  );
-
   return (
     <div>
       <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
@@ -54,7 +40,17 @@ export default function SidebarDrawer() {
       </Box>
 
       <Drawer open={darawerOpen} onClose={toggleDrawer(false)}>
-        {list()}
+        <Box
+          sx={{ width: 300 }}
+          role='presentation'
+          onKeyDown={toggleDrawer(false)}
+        >
+          <List>
+            {categories.map((category: { id: string; name: string }) => (
+              <SidebarList key={category.id} category={category} />
+            ))}
+          </List>
+        </Box>
       </Drawer>
     </div>
   );
