@@ -13,6 +13,7 @@
     "@emotion/styled": "^11.10.4",
     "@mui/icons-material": "^5.10.3",
     "@mui/material": "^5.10.3",
+    "draft-js": "^0.11.7",
     "firebase": "^9.9.3",
     "next": "12.2.5",
     "react": "18.2.0",
@@ -21,6 +22,7 @@
     "recoil": "^0.7.5"
   },
   "devDependencies": {
+    "@types/draft-js": "^0.11.9",
     "@types/node": "18.7.14",
     "@types/react": "18.0.18",
     "@types/react-dom": "18.0.6",

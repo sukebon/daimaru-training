@@ -1,22 +1,18 @@
-import * as React from "react";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import { NextPage } from "next";
-import { useRecoilState, useRecoilValue } from "recoil";
-import {
-  activeSidebarItemState,
-  drawerState,
-  subCategoriesState,
-} from "../../store";
-import List from "@mui/material/List";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import Collapse from "@mui/material/Collapse";
-import ExpandLess from "@mui/icons-material/ExpandLess";
-import ExpandMore from "@mui/icons-material/ExpandMore";
-import ArticleIcon from "@mui/icons-material/Article";
-import ArrowRightIcon from "@mui/icons-material/ArrowRight";
+import * as React from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { NextPage } from 'next';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import { activeSidebarItemState, drawerState, postsState } from '../../store';
+import List from '@mui/material/List';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Collapse from '@mui/material/Collapse';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
+import ArticleIcon from '@mui/icons-material/Article';
+import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 
 type Props = {
   category: { id: string; name: string };
@@ -24,8 +20,8 @@ type Props = {
 
 const SidebarList: NextPage<Props> = ({ category }) => {
   const router = useRouter();
-  const subCategories = useRecoilValue(subCategoriesState); // サブカテゴリー一覧
-  const [filterSubCategories, setFilterSubCategories] = React.useState([]); // 絞り込みをしたサブカテゴリー一覧
+  const posts = useRecoilValue(postsState); // 記事一覧
+  const [filterPosts, setFilterPosts] = React.useState([]); // 絞り込みをした記事一覧
   const [activeSidebarItem, setActiveSidebarItem] = useRecoilState(
     activeSidebarItemState
   );
@@ -33,17 +29,17 @@ const SidebarList: NextPage<Props> = ({ category }) => {
   const [categoryOpen, setCategoryOpen] = React.useState(false);
   const handleClick = () => {
     setCategoryOpen(!categoryOpen);
-    setActiveSidebarItem("");
+    setActiveSidebarItem('');
   };
 
   React.useEffect(() => {
-    const newArray = subCategories.filter(
-      (subCategory: { id: string; categoryId: string }) => {
-        if (category.id === subCategory.categoryId) return subCategory;
+    const newArray = posts.filter(
+      (post: { id: string; categoryId: string }) => {
+        if (category.id === post.categoryId) return post;
       }
     );
-    setFilterSubCategories(newArray);
-  }, [category, subCategories]);
+    setFilterPosts(newArray);
+  }, [posts, category.id]);
 
   return (
     <>
@@ -54,30 +50,29 @@ const SidebarList: NextPage<Props> = ({ category }) => {
         <ListItemText primary={category.name} />
         {categoryOpen ? <ExpandLess /> : <ExpandMore />}
       </ListItemButton>
-      <Collapse in={categoryOpen} timeout="auto" unmountOnExit>
-        <List component="div" disablePadding>
-          {filterSubCategories.map((page: { id: string; name: string }) => (
-            <Link key={page.id} href={`/category/${page.id}`}>
+      <Collapse in={categoryOpen} timeout='auto' unmountOnExit>
+        <List component='div' disablePadding>
+          {filterPosts.map((post: { id: string; title: string }) => (
+            <Link key={post.id} href={`/posts/${post.id}`}>
               <a>
                 <ListItemButton
                   sx={{
                     pl: 4,
                     bgcolor:
-                      page.id === activeSidebarItem &&
-                      (router.pathname.includes("category") ||
-                        router.pathname.includes("posts"))
-                        ? "#f4f4f4"
-                        : "",
+                      post.id === activeSidebarItem &&
+                      router.pathname.includes('posts')
+                        ? '#f4f4f4'
+                        : '',
                   }}
                   onClick={() => {
-                    setActiveSidebarItem(page.id);
+                    setActiveSidebarItem(post.id);
                     setDrawerOpen(false);
                   }}
                 >
                   <ListItemIcon>
                     <ArrowRightIcon />
                   </ListItemIcon>
-                  <ListItemText primary={page.name} />
+                  <ListItemText primary={post.title} />
                 </ListItemButton>
               </a>
             </Link>

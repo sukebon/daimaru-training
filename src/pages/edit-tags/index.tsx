@@ -28,55 +28,22 @@ const EditTags = () => {
   const [filterSubCategories, setFilterSubCategories] = useState<any>([]); // 絞り込みをしたサブカテゴリー一覧
   const [filterPosts, setFilterPosts] = useState<any>([]); // 絞り込みをした記事一覧
 
-  // サブカテゴリーリストの初期値
-  useEffect(() => {
-    setSubCategoryId('');
-    const id = categoryId || (categories && categories[0] && categories[0].id);
-    if (!id) return;
-    const newSubArray: any = subCategories.filter(
-      (subCategory: { id: string; categoryId: string }) => {
-        if (id === subCategory.categoryId) return subCategory;
-      }
-    );
-    setFilterSubCategories(newSubArray);
-    if (!categoryId) setCategoryId(categories[0].id);
-  }, [categoryId, categories, subCategories]);
-
   // 記事リストの初期値
   useEffect(() => {
-    const id = subCategoryId;
-    const newPostArray = posts.filter(
-      (post: { id: string; subCategoryId: string }) => {
-        if (id === post.subCategoryId) return post;
+    let id = categoryId || (categories && categories[0] && categories[0].id);
+
+    const newPostArray: any = posts.filter(
+      (post: { id: string; categoryId: string }) => {
+        if (post.categoryId === id) return post;
       }
     );
     setFilterPosts(newPostArray);
-  }, [posts, subCategoryId]);
+    const result = categories[0] ? categories[0].id : '未分類';
+    if (!categoryId) setCategoryId(result);
+  }, [posts, categories, categoryId]);
 
-  // サブカテゴリーリストの一番最初に色をつける
-  useEffect(() => {
-    const id =
-      filterSubCategories &&
-      filterSubCategories[0] &&
-      filterSubCategories[0].id;
-    setSubCategoryId(id);
-  }, [filterSubCategories]);
-
-  // カテゴリーを選択して「サブカテゴリーをフィルターした一覧」を取得
-  // カテゴリーを選択してIDを取得
   const handleCategoryChecked = (id: string) => {
-    const newSubArray = subCategories.filter(
-      (subCategory: { id: string; categoryId: string }) => {
-        if (id === subCategory.categoryId) return subCategory;
-      }
-    );
     setCategoryId(id);
-    setFilterSubCategories(newSubArray);
-  };
-
-  // サブカテゴリーを選択してIDを取得
-  const handleSubCategoryChecked = (id: string) => {
-    setSubCategoryId(id);
   };
 
   return (
@@ -103,17 +70,11 @@ const EditTags = () => {
               >
                 カテゴリー
                 {categories.length !== 0 && (
-                  <CategoryMenu docId={categoryId} funcSelect={1} />
+                  <CategoryMenu categoryId={categoryId} />
                 )}
               </Box>
               <Box>
-                <CategoryAddModal
-                  title={'カテゴリー'}
-                  collectionName={'categories'}
-                  funcSelect={1}
-                  categoryId={categoryId}
-                  setCategoryId={setCategoryId}
-                />
+                <CategoryAddModal />
               </Box>
               <Box component='ul' p={0}>
                 {categories.map(
@@ -129,46 +90,19 @@ const EditTags = () => {
                     </Box>
                   )
                 )}
+
+                <Box
+                  component='li'
+                  sx={style}
+                  bgcolor={categoryId === '未分類' ? '#f4f4f4' : ''}
+                  onClick={() => handleCategoryChecked('未分類')}
+                >
+                  {'未分類'}
+                </Box>
               </Box>
             </Grid>
-            <Grid item xs={4} borderRight='1px solid #e1e1e1'>
-              <Box
-                display='flex'
-                justifyContent='space-between'
-                alignItems='center'
-                p={2}
-                bgcolor='white'
-                borderBottom='1px solid #f4f4f4'
-              >
-                サブカテゴリー
-                {filterSubCategories.length !== 0 && (
-                  <CategoryMenu docId={subCategoryId} funcSelect={2} />
-                )}
-              </Box>
-              <Box>
-                <CategoryAddModal
-                  title={'サブカテゴリー'}
-                  collectionName={'subCategories'}
-                  funcSelect={2}
-                  categoryId={categoryId}
-                  setCategoryId={setCategoryId}
-                />
-              </Box>
-              <Box component='ul' p={0}>
-                {filterSubCategories.map((subCategory: any, index: number) => (
-                  <Box
-                    key={index}
-                    component='li'
-                    sx={style}
-                    bgcolor={subCategoryId === subCategory.id ? '#f4f4f4' : ''}
-                    onClick={() => handleSubCategoryChecked(subCategory.id)}
-                  >
-                    {subCategory.name}
-                  </Box>
-                ))}
-              </Box>
-            </Grid>
-            <Grid item xs={4}>
+
+            <Grid item xs={8}>
               <Box
                 display='flex'
                 justifyContent='space-between'

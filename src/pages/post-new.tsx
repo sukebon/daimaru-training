@@ -24,6 +24,7 @@ import {
   spinnerState,
   subCategoriesState,
 } from '../../store';
+import DraftJSEditor from '../components/DraftJSEditor';
 import SpinnerLoading from '../components/SpinnerLoading';
 
 const PostNew = () => {
@@ -72,7 +73,7 @@ const PostNew = () => {
   };
 
   // 未記入の場合 登録ボタンを無効化
-  const buttonDisabled = !title || !content || !categoryId || !subCategoryId;
+  const buttonDisabled = !title || !content || !categoryId;
 
   return (
     <>
@@ -97,28 +98,6 @@ const PostNew = () => {
                     {category.name}
                   </MenuItem>
                 ))}
-              </Select>
-            </FormControl>
-            <FormControl fullWidth>
-              <InputLabel id='subcategory-select-label'>
-                サブカテゴリー選択
-              </InputLabel>
-              <Select
-                labelId='subcategory-select-label'
-                id='subcategory-select'
-                label='サブカテゴリー選択'
-                required
-                disabled={!categoryId}
-                value={subCategoryId}
-                onChange={(e) => setSubCategoryId(e.target.value)}
-              >
-                {filterSubCategories.map(
-                  (category: { id: string; name: string }) => (
-                    <MenuItem key={category.id} value={category.id}>
-                      {category.name}
-                    </MenuItem>
-                  )
-                )}
               </Select>
             </FormControl>
           </Box>
@@ -147,6 +126,7 @@ const PostNew = () => {
               }}
             />
           </FormControl>
+          <DraftJSEditor />
           <Box width='100%' textAlign='center'>
             <Button
               variant='contained'
