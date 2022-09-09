@@ -7,14 +7,18 @@ import {
   arrayUnion,
   collection,
   doc,
+  getDoc,
   serverTimestamp,
+  setDoc,
   Timestamp,
   updateDoc,
 } from "firebase/firestore";
 import { db } from "../../firebase";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+
 import {
   alreadyReadListState,
+  articlesState,
   authState,
   postsState,
   spinnerState,
@@ -25,27 +29,40 @@ import { Users } from "../../data";
 type Props = {
   post: {
     id: string;
-    members: string[];
+    title: string;
+    content: string;
+    category: {
+      categoryName: string;
+    };
   };
 };
 
 const AlreadyRead: NextPage<Props> = ({ post }) => {
   const currentUser = useRecoilValue(authState);
-  const [memberInclude, setMemberInclude] = useState<boolean>();
+  const articles = useRecoilValue<any>(articlesState);
   const alreadyReadList = useRecoilValue(alreadyReadListState);
-  const [readMember, setReadMember] = useState([]);
+  const [includingMembers, setIncludingMembers] = useState<boolean>();
+  const [readMembers, setReadMembers] = useState([]);
   const setSpinner = useSetRecoilState(spinnerState);
 
   // 既読にする
-  const addMemberPost = async (id: string | string[] | undefined) => {
+  const addMemberPost = async () => {
     const result = confirm("既読にして宜しいでしょうか");
     if (!result) return;
-    setSpinner(true);
     try {
-      const postRef = doc(db, "posts", `${id}`);
-      await updateDoc(postRef, {
-        members: arrayUnion(currentUser),
-      });
+      setSpinner(true);
+      const postRef = doc(db, "articles", `${post.id}`);
+      const docSnap = await getDoc(postRef);
+      if (docSnap.exists()) {
+        await updateDoc(postRef, {
+          members: arrayUnion(currentUser),
+        });
+      } else {
+        await setDoc(postRef, {
+          members: arrayUnion(currentUser),
+          createdAt: serverTimestamp(),
+        });
+      }
       const docRef = await addDoc(collection(db, "alreadyReadList"), {
         uid: currentUser,
         postId: post.id,
@@ -60,20 +77,23 @@ const AlreadyRead: NextPage<Props> = ({ post }) => {
 
   // 既読リスト取得
   useEffect(() => {
-    const member: any = alreadyReadList.filter(
-      (list: { postId: string; createdAt: Timestamp }) => {
+    const members: any = alreadyReadList.filter(
+      (list: { postId: string; createdAt: Timestamp; uid: string }) => {
         if (list.postId === post.id) return list;
       }
     );
-    setReadMember(member);
+    setReadMembers(members);
   }, [alreadyReadList, post.id]);
 
   // currentUserが既読リストに含まれているか確認
   useEffect(() => {
-    if (!post.members) return;
-    const result = post.members.includes(currentUser);
-    setMemberInclude(result);
-  }, [currentUser, post]);
+    const article: any = articles.find((article: { id: string }) => {
+      if (article.id == post.id) return article;
+    });
+    if (!article) return;
+    const result = article.members.includes(currentUser);
+    setIncludingMembers(result);
+  }, [currentUser, articles, post.id]);
 
   // ディスプレイネームを表示
   const onDisplayName = (userId: string) => {
@@ -85,7 +105,7 @@ const AlreadyRead: NextPage<Props> = ({ post }) => {
 
   return (
     <>
-      {!memberInclude && (
+      {!includingMembers && (
         <Box
           width="100%"
           bgcolor="white"
@@ -100,24 +120,28 @@ const AlreadyRead: NextPage<Props> = ({ post }) => {
             variant="contained"
             sx={{ mt: 1 }}
             onClick={() => {
-              addMemberPost(post.id);
+              addMemberPost();
             }}
           >
             既読にする
           </Button>
         </Box>
       )}
-      {readMember.length > 0 && (
+      {readMembers.length > 0 && (
         <Box
           width="100%"
           bgcolor="white"
           p={3}
+          pt={0}
           mt={3}
           textAlign="center"
           border="1px solid #e1e1e1"
           sx={{ overflowWrap: "break-word" }}
         >
-          {readMember.map(
+          <Box component="h3" textAlign="left">
+            研修済み
+          </Box>
+          {readMembers.map(
             (member: { id: string; uid: string; createdAt: Timestamp }) => (
               <Box key={member.id} display="flex">
                 <Box mr={3}>{onDisplayName(member.uid)}</Box>
