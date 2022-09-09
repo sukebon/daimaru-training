@@ -15,24 +15,19 @@ export const categoriesState = atom({
   default: [],
 });
 
-export const subCategoriesState = atom({
-  key: 'subCategoriesState',
+export const postsState = atom({
+  key: 'postsState',
   default: [],
 });
 
-export const postsState = atom({
-  key: 'postsState',
+export const articlesState = atom({
+  key: 'articlesState',
   default: [],
 });
 
 export const alreadyReadListState = atom({
   key: 'alreadyReadListState',
   default: [],
-});
-
-export const activeSidebarItemState = atom({
-  key: 'activeSidebarItemState',
-  default: '',
 });
 
 export const drawerState = atom<boolean>({

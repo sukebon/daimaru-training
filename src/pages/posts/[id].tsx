@@ -1,73 +1,72 @@
-import { Breadcrumbs, Typography } from '@mui/material';
-import { Box, Container } from '@mui/system';
-import Link from 'next/link';
-import { useRouter } from 'next/router';
-import React, { useEffect, useState } from 'react';
-import { useRecoilValue } from 'recoil';
-import { categoriesState, postsState } from '../../../store';
-import AlreadyReadArea from '../../components/AlreadyRead';
+import { Breadcrumbs, Typography } from "@mui/material";
+import { Box, Container } from "@mui/system";
+import { NextPage } from "next";
+import Link from "next/link";
+import React from "react";
+import AlreadyReadArea from "../../components/AlreadyRead";
 
-const PostId = () => {
-  const router = useRouter();
-  const postId = router.query.id;
-  const categories = useRecoilValue(categoriesState); // カテゴリー一覧
-  const posts = useRecoilValue(postsState); // 記事一覧
-  const [categoryName, setcategoryName] = useState('');
-  const [post, setPost] = useState({
-    title: '',
-    id: '',
-    content: '',
-    members: [],
-    categoryId: '',
-  });
+type Props = {
+  post: {
+    id: string;
+    title: string;
+    content: string;
+    category: {
+      categoryName: string;
+    };
+    updatedAt: string;
+  };
+};
 
-  // 記事を取得 カテゴリーネームを取得
-  useEffect(() => {
-    const newPostObject: any = posts.find((post: { id: string }) => {
-      if (post.id === postId) return post;
-    });
-    setPost(newPostObject);
-
-    const findCategory: any = categories.find(
-      (category: { id: string; name: string }) => {
-        if (category.id === newPostObject.categoryId) return category;
-      }
-    );
-    if (!findCategory) return;
-    setcategoryName(findCategory.name);
-  }, [categories, postId, posts]);
+const PostId: NextPage<Props> = ({ post }) => {
+  const onDate = (time: string) => {
+    const date = new Date(time);
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const d = date.getDate();
+    return `${year}-${month}-${d}`;
+  };
 
   return (
     <>
       {post && (
         <>
-          <Box role='presentation' p={1}>
-            <Breadcrumbs aria-label='breadcrumb'>
-              <Link color='inherit' href={'/'}>
+          <Box role="presentation" p={1}>
+            <Breadcrumbs aria-label="breadcrumb">
+              <Link color="inherit" href={"/"}>
                 <a>Top</a>
               </Link>
 
-              <Typography color='text.primary'>
-                {categoryName ? categoryName : '未分類'}
+              <Typography color="text.primary">
+                {post.category.categoryName}
               </Typography>
 
-              <Typography color='text.primary'>{post.title}</Typography>
+              <Typography color="text.primary">{post.title}</Typography>
             </Breadcrumbs>
           </Box>
-          <Container maxWidth='md'>
-            <Box component='h1' mt={6} sx={{ fontSize: '1.2rem' }}>
-              {post.title}
-            </Box>
+          <Container maxWidth="md" sx={{ py: 6 }}>
             <Box
-              width='100%'
-              bgcolor='white'
+              width="100%"
+              bgcolor="white"
               p={3}
-              border='1px solid #e1e1e1'
-              sx={{ overflowWrap: 'break-word' }}
+              border="1px solid #e1e1e1"
+              sx={{ overflowWrap: "break-word" }}
             >
-              <Typography width='100%' whiteSpace='pre-wrap'>
-                {post.content}
-              </Typography>
+              <Box textAlign="right" fontSize="1rem">
+                {onDate(post.updatedAt)}
+              </Box>
+              <Box
+                component="h1"
+                textAlign="center"
+                mb={5}
+                sx={{ fontSize: "2rem", fontWeight: "bold" }}
+              >
+                {post.title}
+              </Box>
+              <Box
+                dangerouslySetInnerHTML={{
+                  __html: post.content,
+                }}
+              ></Box>
             </Box>
             <AlreadyReadArea post={post} />
           </Container>
@@ -78,3 +77,44 @@ const PostId = () => {
 };
 
 export default PostId;
+
+export async function getStaticPaths() {
+  const option: {} = {
+    headers: {
+      "X-MICROCMS-API-KEY": "5ac00910d20842ae9c2e74629aca309fa76c",
+    },
+  };
+  const res = await fetch("https://traning.microcms.io/api/v1/posts", option);
+  const json = await res.json();
+  const paths = json.contents.map(
+    (content: { id: string; title: string; content: string }) => ({
+      params: {
+        id: content.id,
+        title: content.title,
+        content: content.content,
+      },
+    })
+  );
+  return {
+    paths,
+    fallback: false,
+  };
+}
+
+export async function getStaticProps({ params }: any) {
+  const option: {} = {
+    headers: {
+      "X-MICROCMS-API-KEY": "5ac00910d20842ae9c2e74629aca309fa76c",
+    },
+  };
+  const res = await fetch(
+    `https://traning.microcms.io/api/v1/posts/${params.id}`,
+    option
+  );
+  const post = await res.json();
+  return {
+    props: {
+      post,
+    },
+  };
+}
