@@ -1,18 +1,18 @@
-import * as React from "react";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import { NextPage } from "next";
-import { useRecoilState, useRecoilValue } from "recoil";
-import { drawerState, postsState } from "../../store";
-import List from "@mui/material/List";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import Collapse from "@mui/material/Collapse";
-import ExpandLess from "@mui/icons-material/ExpandLess";
-import ExpandMore from "@mui/icons-material/ExpandMore";
-import ArticleIcon from "@mui/icons-material/Article";
-import ArrowRightIcon from "@mui/icons-material/ArrowRight";
+import * as React from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { NextPage } from 'next';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import { drawerState, postsState } from '../../store';
+import List from '@mui/material/List';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Collapse from '@mui/material/Collapse';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
+import ArticleIcon from '@mui/icons-material/Article';
+import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 
 type Props = {
   category: {
@@ -49,15 +49,15 @@ const SidebarList: NextPage<Props> = ({ category }) => {
         <ListItemText primary={category.categoryName} />
         {categoryOpen ? <ExpandLess /> : <ExpandMore />}
       </ListItemButton>
-      <Collapse in={categoryOpen} timeout="auto" unmountOnExit>
-        <List component="div" disablePadding>
+      <Collapse in={categoryOpen} timeout='auto' unmountOnExit>
+        <List component='div' disablePadding>
           {filterPosts.map((post: { id: string; title: string }) => (
             <Link key={post.id} href={`/posts/${post.id}`}>
               <a>
                 <ListItemButton
                   sx={{
                     pl: 4,
-                    bgcolor: post.id === queryId ? "#f4f4f4" : "",
+                    bgcolor: post.id === queryId ? '#f4f4f4' : '',
                   }}
                   onClick={() => {
                     setDrawerOpen(false);

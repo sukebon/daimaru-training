@@ -1,24 +1,24 @@
-import "../styles/globals.css";
-import type { AppProps } from "next/app";
-import { RecoilRoot } from "recoil";
-import Layout from "../components/Layout";
-import { createTheme, ThemeProvider } from "@mui/material";
+import '../styles/globals.css';
+import type { AppProps } from 'next/app';
+import { RecoilRoot } from 'recoil';
+import Layout from '../components/Layout';
+import { createTheme, ThemeProvider } from '@mui/material';
 
 const theme = createTheme({
   typography: {
     fontFamily: [
-      "Noto Sans JP",
-      "-apple-system",
-      "BlinkMacSystemFont",
+      'Noto Sans JP',
+      '-apple-system',
+      'BlinkMacSystemFont',
       '"Segoe UI"',
-      "Roboto",
+      'Roboto',
       '"Helvetica Neue"',
-      "Arial",
-      "sans-serif",
+      'Arial',
+      'sans-serif',
       '"Apple Color Emoji"',
       '"Segoe UI Emoji"',
       '"Segoe UI Symbol"',
-    ].join(","),
+    ].join(','),
   },
 });
 

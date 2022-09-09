@@ -1,24 +1,25 @@
-import * as React from "react";
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import Menu from "@mui/material/Menu";
+import * as React from 'react';
+import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import Toolbar from '@mui/material/Toolbar';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
+import Menu from '@mui/material/Menu';
+import Container from '@mui/material/Container';
+import Tooltip from '@mui/material/Tooltip';
+import MenuItem from '@mui/material/MenuItem';
+import SettingsIcon from '@mui/icons-material/Settings';
+import { Badge, Divider } from '@mui/material';
+import MailIcon from '@mui/icons-material/Mail';
 
-import Container from "@mui/material/Container";
-import Tooltip from "@mui/material/Tooltip";
-import MenuItem from "@mui/material/MenuItem";
-import SettingsIcon from "@mui/icons-material/Settings";
-import { signOut } from "firebase/auth";
-import { auth } from "../../firebase";
-import { useRecoilState } from "recoil";
-import { authState } from "../../store";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import SidebarDrawer from "./SidebarDrawer";
-import { Users } from "../../data";
-import { Divider } from "@mui/material";
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import SidebarDrawer from './SidebarDrawer';
+import { signOut } from 'firebase/auth';
+import { auth } from '../../firebase';
+import { useRecoilState } from 'recoil';
+import { authState } from '../../store';
+import { Users } from '../../data';
 
 const Header = () => {
   const router = useRouter();
@@ -27,8 +28,7 @@ const Header = () => {
   // 未ログインの場合、login画面へ移動
   React.useEffect(() => {
     if (!currentUser) {
-      console.log(currentUser);
-      router.push("/login");
+      router.push('/login');
     }
   }, [currentUser, router]);
 
@@ -36,18 +36,18 @@ const Header = () => {
   const onSignOut = () => {
     signOut(auth)
       .then(() => {
-        console.log("logout");
-        setCurrentUser("");
+        console.log('logout');
+        setCurrentUser('');
       })
       .catch((err) => {});
   };
 
   const headerMenu = [
-    { link: "/", title: "トップページ" },
+    { link: '/', title: 'トップページ' },
 
     {
-      link: "/posts",
-      title: "記事リスト",
+      link: '/posts',
+      title: '記事リスト',
     },
   ];
 
@@ -84,28 +84,30 @@ const Header = () => {
 
   return (
     <AppBar
-      position="static"
+      position='static'
       sx={{
-        bgcolor: "white",
-        boxShadow: "none",
-        borderBottom: "1px solid #e1e1e1",
+        bgcolor: 'white',
+        boxShadow: 'none',
+        borderBottom: '1px solid #e1e1e1',
+        position: 'sticky',
+        top: 0,
       }}
     >
-      <Container maxWidth="xl">
-        <Toolbar disableGutters sx={{ height: "64px" }}>
+      <Container maxWidth='xl'>
+        <Toolbar disableGutters sx={{ height: '64px' }}>
           <SidebarDrawer />
           <Typography
-            variant="h6"
+            variant='h6'
             noWrap
-            component="div"
+            component='div'
             sx={{
               flexGrow: 1,
-              display: { xs: "flex", md: "none" },
-              justifyContent: "center",
-              color: "black",
+              display: { xs: 'flex', md: 'none' },
+              justifyContent: 'center',
+              color: 'black',
             }}
           >
-            <Link href="/">
+            <Link href='/'>
               <a>大丸白衣 研修サイト</a>
             </Link>
           </Typography>
@@ -113,53 +115,57 @@ const Header = () => {
           <Box
             sx={{
               flexGrow: 1,
-              display: { xs: "none", md: "flex" },
-              justifyContent: "left",
+              display: { xs: 'none', md: 'flex' },
+              justifyContent: 'left',
+              alignItems: 'center',
             }}
           >
             {headerMenu.map((menu: { title: string; link: string }) => (
               <Link key={menu.title} href={menu.link}>
                 <a>
-                  <MenuItem>
-                    <Typography textAlign="center" color="black">
+                  <MenuItem sx={{ mr: 1 }}>
+                    <Typography textAlign='center' color='black'>
                       {menu.title}
                     </Typography>
                   </MenuItem>
                 </a>
               </Link>
             ))}
+            <Badge color='primary' badgeContent={1} max={999} sx={{ mx: 2 }}>
+              <MailIcon sx={{ color: 'gray' }} />
+            </Badge>
           </Box>
 
           <Box
             sx={{
               flexGrow: 0,
-              display: "flex",
-              alignItems: "center",
+              display: 'flex',
+              alignItems: 'center',
             }}
           >
-            <Tooltip title="メニュー">
+            <Tooltip title='メニュー'>
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <SettingsIcon fontSize="large" />
+                <SettingsIcon fontSize='large' />
               </IconButton>
             </Tooltip>
             <Menu
-              sx={{ mt: "35px" }}
-              id="menu-appbar"
+              sx={{ mt: '35px' }}
+              id='menu-appbar'
               anchorEl={anchorElUser}
               anchorOrigin={{
-                vertical: "top",
-                horizontal: "right",
+                vertical: 'top',
+                horizontal: 'right',
               }}
               keepMounted
               transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
+                vertical: 'top',
+                horizontal: 'right',
               }}
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
               <MenuItem onClick={handleCloseUserMenu}>
-                <Typography textAlign="center">
+                <Typography textAlign='center'>
                   {onDisplayName(currentUser)}
                 </Typography>
               </MenuItem>
@@ -168,13 +174,13 @@ const Header = () => {
                 <Link key={menu.title} href={menu.link}>
                   <a>
                     <MenuItem onClick={handleCloseUserMenu}>
-                      <Typography textAlign="center">{menu.title}</Typography>
+                      <Typography textAlign='center'>{menu.title}</Typography>
                     </MenuItem>
                   </a>
                 </Link>
               ))}
               <MenuItem onClick={handleCloseUserMenu}>
-                <Typography onClick={onSignOut} textAlign="center">
+                <Typography onClick={onSignOut} textAlign='center'>
                   ログアウト
                 </Typography>
               </MenuItem>
