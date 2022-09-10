@@ -62,7 +62,24 @@ const Home: NextPage = ({ postsApi, categoriesApi }: any) => {
     const article = articles.find((article: { id: string }) => {
       if (article.id === postId) return article;
     });
+    console.log(article);
+    if (!article) {
+      return (
+        <Box
+          component='span'
+          mr={1}
+          p={1}
+          borderRadius={1}
+          display='inline-block'
+          color='white'
+          bgcolor='#03a9f4'
+        >
+          未読
+        </Box>
+      );
+    }
     const result = article.members.includes(currentUser);
+
     if (!result)
       return (
         <Box
