@@ -10,20 +10,23 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { Badge, Divider } from '@mui/material';
-import MailIcon from '@mui/icons-material/Mail';
+import ArticleIcon from '@mui/icons-material/Article';
 
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import SidebarDrawer from './SidebarDrawer';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../firebase';
-import { useRecoilState } from 'recoil';
-import { authState } from '../../store';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import { articlesState, authState, postsState } from '../../store';
 import { Users } from '../../data';
 
 const Header = () => {
   const router = useRouter();
+  const posts = useRecoilValue(postsState); // 記事一覧
+  const articles = useRecoilValue(articlesState);
   const [currentUser, setCurrentUser] = useRecoilState(authState);
+  const [unReadCount, setUnreadCount] = React.useState(0);
 
   // 未ログインの場合、login画面へ移動
   React.useEffect(() => {
@@ -42,37 +45,6 @@ const Header = () => {
       .catch((err) => {});
   };
 
-  const headerMenu = [
-    { link: '/', title: 'トップページ' },
-
-    {
-      link: '/posts',
-      title: '記事リスト',
-    },
-  ];
-
-  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
-    null
-  );
-  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
-    null
-  );
-
-  const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElNav(event.currentTarget);
-  };
-  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElUser(event.currentTarget);
-  };
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
-
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
-
   // ディスプレイネームを表示
   const onDisplayName = (userId: string) => {
     const user: any = Users.find((user) => {
@@ -80,6 +52,32 @@ const Header = () => {
     });
     if (!user) return;
     return user.name;
+  };
+
+  //未読カウントを表示
+  React.useEffect(() => {
+    const newArticles: any = articles.filter(
+      (article: { members: string[] }) => {
+        if (article.members.includes(currentUser)) return article;
+      }
+    );
+    const result = posts.length - newArticles.length;
+    setUnreadCount(result);
+  }, [currentUser, articles, posts.length]);
+
+  // メニューリスト
+  const headerMenu = [{ link: '/', title: 'トップページ' }];
+
+  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
+    null
+  );
+
+  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElUser(event.currentTarget);
+  };
+
+  const handleCloseUserMenu = () => {
+    setAnchorElUser(null);
   };
 
   return (
@@ -96,12 +94,14 @@ const Header = () => {
       <Container maxWidth='xl'>
         <Toolbar disableGutters sx={{ height: '64px' }}>
           <SidebarDrawer />
+
           <Typography
             variant='h6'
             noWrap
             component='div'
             sx={{
               flexGrow: 1,
+              width: '60%',
               display: { xs: 'flex', md: 'none' },
               justifyContent: 'center',
               color: 'black',
@@ -115,6 +115,7 @@ const Header = () => {
           <Box
             sx={{
               flexGrow: 1,
+              w: '80%',
               display: { xs: 'none', md: 'flex' },
               justifyContent: 'left',
               alignItems: 'center',
@@ -131,18 +132,34 @@ const Header = () => {
                 </a>
               </Link>
             ))}
-            <Badge color='primary' badgeContent={1} max={999} sx={{ mx: 2 }}>
-              <MailIcon sx={{ color: 'gray' }} />
-            </Badge>
           </Box>
 
           <Box
             sx={{
               flexGrow: 0,
+              width: '20%',
               display: 'flex',
               alignItems: 'center',
+              justifyContent: 'flex-end',
             }}
           >
+            {unReadCount > 0 && (
+              <Link href={'/unread'}>
+                <a>
+                  <Tooltip title='未読件数'>
+                    <Badge
+                      color='primary'
+                      badgeContent={unReadCount}
+                      max={999}
+                      sx={{ mx: 2, cursor: 'pointer' }}
+                    >
+                      <ArticleIcon sx={{ color: 'gray' }} />
+                    </Badge>
+                  </Tooltip>
+                </a>
+              </Link>
+            )}
+
             <Tooltip title='メニュー'>
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 <SettingsIcon fontSize='large' />

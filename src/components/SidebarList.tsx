@@ -11,7 +11,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Collapse from '@mui/material/Collapse';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
-import ArticleIcon from '@mui/icons-material/Article';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 
 type Props = {
@@ -35,7 +35,9 @@ const SidebarList: NextPage<Props> = ({ category }) => {
 
   React.useEffect(() => {
     const newArray = posts.filter((post: { id: string; category: any }) => {
-      if (category.id === post.category.id) return post;
+      if (post.category) {
+        if (category.id === post.category.id) return post;
+      }
     });
     setFilterPosts(newArray);
   }, [posts, category.id]);
@@ -44,7 +46,7 @@ const SidebarList: NextPage<Props> = ({ category }) => {
     <>
       <ListItemButton onClick={handleClick}>
         <ListItemIcon>
-          <ArticleIcon />
+          <MenuBookIcon />
         </ListItemIcon>
         <ListItemText primary={category.categoryName} />
         {categoryOpen ? <ExpandLess /> : <ExpandMore />}

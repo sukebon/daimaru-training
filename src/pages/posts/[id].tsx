@@ -65,7 +65,7 @@ const PostId: NextPage<Props> = ({ post }) => {
               </Link>
 
               <Typography color='text.primary'>
-                {post.category.categoryName}
+                {post.category ? post.category.categoryName : '未分類'}
               </Typography>
 
               <Typography color='text.primary'>{post.title}</Typography>

@@ -10,10 +10,16 @@ import {
   postsState,
 } from '../../store';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
+import {
+  collection,
+  deleteDoc,
+  doc,
+  onSnapshot,
+  orderBy,
+  query,
+} from 'firebase/firestore';
 import { Box, Container } from '@mui/material';
-import Link from 'next/link';
-import AlreadyReadCount from '../components/AlreadyReadCount';
+import PostList from '../components/PostList';
 
 const Home: NextPage = ({ postsApi, categoriesApi }: any) => {
   const currentUser = useRecoilValue(authState);
@@ -58,43 +64,32 @@ const Home: NextPage = ({ postsApi, categoriesApi }: any) => {
     });
   }, [setArticles]);
 
-  const onUnreadIcon = (postId: string) => {
-    const article = articles.find((article: { id: string }) => {
-      if (article.id === postId) return article;
-    });
-    console.log(article);
-    if (!article) {
-      return (
-        <Box
-          component='span'
-          mr={1}
-          p={1}
-          borderRadius={1}
-          display='inline-block'
-          color='white'
-          bgcolor='#03a9f4'
-        >
-          未読
-        </Box>
-      );
-    }
-    const result = article.members.includes(currentUser);
+  //microCMSで記事を削除したらfirebaseのデータも削除する
+  useEffect(() => {
+    const deleteFirebaseData = async () => {
+      if (articles.length <= posts.length) return;
+      const postsIdArray = posts.map((post: { id: string }) => {
+        return post.id;
+      });
+      const surplusId = articles.filter((article: { id: string }) => {
+        if (!postsIdArray.includes(article.id)) return article;
+      });
 
-    if (!result)
-      return (
-        <Box
-          component='span'
-          mr={1}
-          p={1}
-          borderRadius={1}
-          display='inline-block'
-          color='white'
-          bgcolor='#03a9f4'
-        >
-          未読
-        </Box>
-      );
-  };
+      surplusId.forEach(async (article: { id: string }) => {
+        await deleteDoc(doc(db, 'articles', `${article.id}`));
+
+        alreadyReadList.forEach(
+          async (list: { postId: string; id: string }) => {
+            if (list.postId === article.id) {
+              await deleteDoc(doc(db, 'alreadyReadList', `${list.id}`));
+            }
+            return;
+          }
+        );
+      });
+    };
+    deleteFirebaseData();
+  }, [alreadyReadList, articles, posts]);
 
   return (
     <>
@@ -107,59 +102,9 @@ const Home: NextPage = ({ postsApi, categoriesApi }: any) => {
           </Head>
           <Container maxWidth='md'>
             <Box component='h1' mt={6} sx={{ fontSize: '1.2rem' }}>
-              新着
+              研修一覧
             </Box>
-            <Box width='100%'>
-              {posts.length >= 1 ? (
-                <Box
-                  component='ul'
-                  p={0}
-                  border='1px solid #e1e1e1'
-                  borderBottom='none'
-                  sx={{ backgroundColor: 'white' }}
-                >
-                  {posts.map(
-                    (post: {
-                      id: string;
-                      title: string;
-                      subCategoryId: string;
-                    }) => (
-                      <Link href={`/posts/${post.id}`} key={post.id}>
-                        <a>
-                          <Box
-                            component='li'
-                            p={2}
-                            display='flex'
-                            justifyContent='space-between'
-                            alignItems='center'
-                            borderBottom='1px solid #e1e1e1'
-                            sx={{
-                              listStyle: 'none',
-                              '&:hover': {
-                                background: '#e4e4e4',
-                              },
-                            }}
-                          >
-                            <Box>
-                              {onUnreadIcon(post.id)}
-
-                              {post.title}
-                            </Box>
-                            <Box>
-                              <AlreadyReadCount postId={post.id} />
-                            </Box>
-                          </Box>
-                        </a>
-                      </Link>
-                    )
-                  )}
-                </Box>
-              ) : (
-                <Box p={6} textAlign='center' fontSize='1.2rem'>
-                  登録された記事がありません。
-                </Box>
-              )}
-            </Box>
+            <PostList posts={posts} articles={articles} />
           </Container>
         </>
       )}
