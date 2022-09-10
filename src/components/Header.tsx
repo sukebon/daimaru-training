@@ -10,7 +10,7 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { Badge, Divider } from '@mui/material';
-import ArticleIcon from '@mui/icons-material/Article';
+import NotificationsIcon from '@mui/icons-material/Notifications';
 
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -153,7 +153,7 @@ const Header = () => {
                       max={999}
                       sx={{ mx: 2, cursor: 'pointer' }}
                     >
-                      <ArticleIcon sx={{ color: 'gray' }} />
+                      <NotificationsIcon sx={{ color: 'gray' }} />
                     </Badge>
                   </Tooltip>
                 </a>
