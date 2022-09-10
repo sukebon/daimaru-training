@@ -1,5 +1,6 @@
 import { CollectionsOutlined } from '@mui/icons-material';
 import { Box, Container } from '@mui/system';
+import Head from 'next/head';
 import Link from 'next/link';
 import React, { useState } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
@@ -37,6 +38,9 @@ const Unread = () => {
     <>
       {currentUser && (
         <>
+          <Head>
+            <title>未読一覧</title>
+          </Head>
           <Container maxWidth='md'>
             <Box component='h1' mt={6} sx={{ fontSize: '1.2rem' }}>
               未読一覧

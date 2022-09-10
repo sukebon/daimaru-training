@@ -1,13 +1,14 @@
-import { Breadcrumbs, Button, Typography } from '@mui/material';
-import { Box, Container } from '@mui/system';
+import React from 'react';
 import { NextPage } from 'next';
 import Link from 'next/link';
-import React from 'react';
+import { Box, Container } from '@mui/system';
 import { useRecoilValue } from 'recoil';
 import { authState, postsState } from '../../../store';
 import AlreadyReadArea from '../../components/AlreadyRead';
+import { Breadcrumbs, Button, Typography } from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import Head from 'next/head';
 
 type Props = {
   post: {
@@ -25,6 +26,7 @@ const PostId: NextPage<Props> = ({ post }) => {
   const currentUser = useRecoilValue(authState);
   const posts: { id: string; title: string }[] | never =
     useRecoilValue(postsState); // 記事一覧
+
   const onDate = (time: string) => {
     const date = new Date(time);
     const year = date.getFullYear();
@@ -42,15 +44,20 @@ const PostId: NextPage<Props> = ({ post }) => {
 
     if (posts.length <= nextPrevIndex || 0 > nextPrevIndex) return '';
     return (
-      <Link href={`/posts/${posts[nextPrevIndex].id}`}>
-        <a>
-          <Box display='flex' alignItems='center'>
-            {index === -1 && <ChevronLeftIcon />}
-            {posts[nextPrevIndex].title}
-            {index === 1 && <ChevronRightIcon />}
-          </Box>
-        </a>
-      </Link>
+      <>
+        <Head>
+          <title>{post.title}</title>
+        </Head>
+        <Link href={`/posts/${posts[nextPrevIndex].id}`}>
+          <a>
+            <Box display='flex' alignItems='center'>
+              {index === -1 && <ChevronLeftIcon />}
+              {posts[nextPrevIndex].title}
+              {index === 1 && <ChevronRightIcon />}
+            </Box>
+          </a>
+        </Link>
+      </>
     );
   };
 
