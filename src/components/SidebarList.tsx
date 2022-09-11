@@ -25,22 +25,12 @@ const SidebarList: NextPage<Props> = ({ category }) => {
   const router = useRouter();
   const queryId = router.query.id;
   const posts = useRecoilValue(postsState); // 記事一覧
-  const [filterPosts, setFilterPosts] = React.useState([]); // 絞り込みをした記事一覧
-
   const [darawerOpen, setDrawerOpen] = useRecoilState(drawerState);
   const [categoryOpen, setCategoryOpen] = React.useState(false);
+
   const handleClick = () => {
     setCategoryOpen(!categoryOpen);
   };
-
-  React.useEffect(() => {
-    const newArray = posts.filter((post: { id: string; category: any }) => {
-      if (post.category) {
-        if (category.id === post.category.id) return post;
-      }
-    });
-    setFilterPosts(newArray);
-  }, [posts, category.id]);
 
   return (
     <>
@@ -53,26 +43,32 @@ const SidebarList: NextPage<Props> = ({ category }) => {
       </ListItemButton>
       <Collapse in={categoryOpen} timeout='auto' unmountOnExit>
         <List component='div' disablePadding>
-          {filterPosts.map((post: { id: string; title: string }) => (
-            <Link key={post.id} href={`/posts/${post.id}`}>
-              <a>
-                <ListItemButton
-                  sx={{
-                    pl: 4,
-                    bgcolor: post.id === queryId ? '#f4f4f4' : '',
-                  }}
-                  onClick={() => {
-                    setDrawerOpen(false);
-                  }}
-                >
-                  <ListItemIcon>
-                    <ArrowRightIcon />
-                  </ListItemIcon>
-                  <ListItemText primary={post.title} />
-                </ListItemButton>
-              </a>
-            </Link>
-          ))}
+          {posts
+            .filter((post: { category: { id: string } }) => {
+              if (post.category) {
+                if (post.category.id === category.id) return true;
+              }
+            })
+            .map((post: { id: string; title: string }) => (
+              <Link key={post.id} href={`/posts/${post.id}`}>
+                <a>
+                  <ListItemButton
+                    sx={{
+                      pl: 4,
+                      bgcolor: post.id === queryId ? '#f4f4f4' : '',
+                    }}
+                    onClick={() => {
+                      setDrawerOpen(false);
+                    }}
+                  >
+                    <ListItemIcon>
+                      <ArrowRightIcon />
+                    </ListItemIcon>
+                    <ListItemText primary={post.title} />
+                  </ListItemButton>
+                </a>
+              </Link>
+            ))}
         </List>
       </Collapse>
     </>

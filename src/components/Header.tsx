@@ -56,11 +56,9 @@ const Header = () => {
 
   //未読カウントを表示
   React.useEffect(() => {
-    const newArticles: any = articles.filter(
-      (article: { members: string[] }) => {
-        if (article.members.includes(currentUser)) return article;
-      }
-    );
+    const newArticles = articles.filter((article: { members: string[] }) => {
+      if (article.members.includes(currentUser)) return article;
+    });
     const result = posts.length - newArticles.length;
     setUnreadCount(result);
   }, [currentUser, articles, posts.length]);
@@ -94,7 +92,6 @@ const Header = () => {
       <Container maxWidth='xl'>
         <Toolbar disableGutters sx={{ height: '64px' }}>
           <SidebarDrawer />
-
           <Typography
             variant='h6'
             noWrap

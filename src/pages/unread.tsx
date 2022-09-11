@@ -1,12 +1,9 @@
-import { CollectionsOutlined } from '@mui/icons-material';
-import { Box, Container } from '@mui/system';
-import Head from 'next/head';
-import Link from 'next/link';
 import React, { useState } from 'react';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import Head from 'next/head';
+import { useRecoilValue } from 'recoil';
 import { articlesState, authState, postsState } from '../../store';
-import AlreadyReadCount from '../components/AlreadyReadCount';
 import PostList from '../components/PostList';
+import { Box, Container } from '@mui/system';
 
 const Unread = () => {
   const currentUser = useRecoilValue(authState);
@@ -16,19 +13,18 @@ const Unread = () => {
 
   //未読記事一覧
   React.useEffect(() => {
-    const unReadArticles: any = articles.filter(
-      (article: { members: string[] }) => {
+    const unReadIdArray: string[] = articles
+      .filter((article: { members: string[] }) => {
         if (!article.members.includes(currentUser)) {
           return article;
         }
-      }
-    );
-    const unReadArticlesId = unReadArticles.map((article: { id: string }) => {
-      return article.id;
-    });
+      })
+      .map((article: { id: string }) => {
+        return article.id;
+      });
 
     const filterPosts = posts.filter((post: { id: string }) => {
-      if (unReadArticlesId.includes(post.id)) return post;
+      if (unReadIdArray.includes(post.id)) return post;
     });
 
     setUnReadPosts(filterPosts);

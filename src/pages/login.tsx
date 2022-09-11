@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
+import { useAuthState } from 'react-firebase-hooks/auth';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../firebase';
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { Box, Button, FormControl, TextField } from '@mui/material';
-import { useRouter } from 'next/router';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { authState, spinnerState } from '../../store';
 import SpinnerLoading from '../components/SpinnerLoading';
+import { Box, Button, FormControl, TextField } from '@mui/material';
 
 const Login = () => {
   const router = useRouter();
@@ -24,7 +24,7 @@ const Login = () => {
     }
   }, [user, router, setCurrentUser]);
 
-  const signInUser = () => {
+  const onSignInUser = () => {
     setSpinner(true);
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
@@ -81,7 +81,7 @@ const Login = () => {
             onChange={(e) => setPassword(e.target.value)}
           />
         </FormControl>
-        <Button variant='contained' onClick={signInUser}>
+        <Button variant='contained' onClick={onSignInUser}>
           ログイン
         </Button>
       </Box>

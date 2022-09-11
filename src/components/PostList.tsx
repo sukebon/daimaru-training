@@ -24,12 +24,12 @@ const PostList: NextPage<Props> = ({ posts, articles }) => {
   // 未読の場合、「未読」を表示
   const unreadIcon = (postId: string) => {
     const article = articles.find((article: { id: string }) => {
-      if (article.id === postId) return article;
+      if (article.id === postId) return true;
     });
-    if (!article) return true;
+    if (!article) return true; //誰にも見られてなかったら未読を表示
     const result = article.members.includes(currentUser);
-    if (!result) return true;
-    return;
+    if (!result) return true; //自分が見ていなかったら未読を表示
+    return false;
   };
 
   return (

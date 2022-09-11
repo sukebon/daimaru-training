@@ -2,9 +2,9 @@ import React from 'react';
 import { NextPage } from 'next';
 import { useRecoilValue } from 'recoil';
 import { articlesState, authState, postsState } from '../../../store';
+import PostList from '../../components/PostList';
 import { Container } from '@mui/material';
 import { Box } from '@mui/system';
-import PostList from '../../components/PostList';
 
 type Props = {
   posts: {
