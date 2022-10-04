@@ -1,5 +1,5 @@
 import type { NextPage } from 'next';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { auth, db } from '../../firebase';
 import Head from 'next/head';
 import {
@@ -25,17 +25,18 @@ const Home: NextPage = ({ postsApi, categoriesApi }: any) => {
   const currentUser = useRecoilValue(authState);
   const [categories, setCategories]: any = useRecoilState(categoriesState); // カテゴリー一覧
   const [posts, setPosts]: any = useRecoilState(postsState); // 記事一覧
+  const [unReadPosts, setUnReadPosts] = useState([]);
   const [articles, setArticles] = useRecoilState<any>(articlesState);
   const [alreadyReadList, setAlreadyReadList]: any =
     useRecoilState(alreadyReadListState); // 記事一覧
 
-  // 一覧を取得
+  //記事 一覧とカテゴリー一覧を取得
   useEffect(() => {
     setPosts(postsApi);
     setCategories(categoriesApi);
   }, [postsApi, setPosts, categoriesApi, setCategories]);
 
-  // 既読一覧を取得
+  // 既読した個人情報一覧を取得
   useEffect(() => {
     const q = query(
       collection(db, 'alreadyReadList'),
@@ -51,7 +52,7 @@ const Home: NextPage = ({ postsApi, categoriesApi }: any) => {
     });
   }, [setAlreadyReadList]);
 
-  // 既読一覧を取得
+  // 既読の記事一覧を取得
   useEffect(() => {
     const q = query(collection(db, 'articles'), orderBy('createdAt', 'desc'));
     onSnapshot(q, (querySnapshot) => {
@@ -63,6 +64,25 @@ const Home: NextPage = ({ postsApi, categoriesApi }: any) => {
       );
     });
   }, [setArticles]);
+
+  //未読記事一覧
+  useEffect(() => {
+    const unReadIdArray: string[] = articles
+      .filter((article: { members: string[] }) => {
+        if (!article.members.includes(currentUser)) {
+          return article;
+        }
+      })
+      .map((article: { id: string }) => {
+        return article.id;
+      });
+
+    const filterPosts = posts.filter((post: { id: string }) => {
+      if (unReadIdArray.includes(post.id)) return post;
+    });
+
+    setUnReadPosts(filterPosts);
+  }, [currentUser, articles, posts]);
 
   //microCMSで記事を削除したらfirebaseのデータも削除する
   useEffect(() => {
@@ -100,9 +120,9 @@ const Home: NextPage = ({ postsApi, categoriesApi }: any) => {
           </Head>
           <Container maxWidth='md'>
             <Box component='h1' mt={6} sx={{ fontSize: '1.2rem' }}>
-              研修一覧
+              トップページ
             </Box>
-            <PostList posts={posts} articles={articles} />
+            <PostList posts={unReadPosts} articles={articles} />
           </Container>
         </>
       )}

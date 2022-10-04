@@ -2,24 +2,21 @@ import * as React from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import Menu from '@mui/material/Menu';
 import Container from '@mui/material/Container';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import SettingsIcon from '@mui/icons-material/Settings';
-import { Badge, Divider } from '@mui/material';
+import { Badge } from '@mui/material';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import SidebarDrawer from './SidebarDrawer';
-import { signOut } from 'firebase/auth';
-import { auth } from '../../firebase';
+
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { articlesState, authState, postsState } from '../../store';
-import { Users } from '../../data';
+
+import MenuIconButton from './MenuIconButton';
 
 const Header = () => {
   const router = useRouter();
@@ -35,25 +32,6 @@ const Header = () => {
     }
   }, [currentUser, router]);
 
-  // サインアウト
-  const onSignOut = () => {
-    signOut(auth)
-      .then(() => {
-        console.log('logout');
-        setCurrentUser('');
-      })
-      .catch((err) => {});
-  };
-
-  // ディスプレイネームを表示
-  const onDisplayName = (userId: string) => {
-    const user: any = Users.find((user) => {
-      if (user.uid === userId) return user.name;
-    });
-    if (!user) return;
-    return user.name;
-  };
-
   //未読カウントを表示
   React.useEffect(() => {
     const newArticles = articles.filter((article: { members: string[] }) => {
@@ -64,19 +42,10 @@ const Header = () => {
   }, [currentUser, articles, posts.length]);
 
   // メニューリスト
-  const headerMenu = [{ link: '/', title: 'トップページ' }];
-
-  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
-    null
-  );
-
-  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElUser(event.currentTarget);
-  };
-
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
+  const headerMenu = [
+    { link: '/', title: 'トップページ' },
+    { link: '/read', title: '記事一覧' },
+  ];
 
   return (
     <AppBar
@@ -140,7 +109,7 @@ const Header = () => {
               justifyContent: 'flex-end',
             }}
           >
-            {unReadCount > 0 && (
+            {/* {unReadCount > 0 && (
               <Link href={'/unread'}>
                 <a>
                   <Tooltip title='未読件数'>
@@ -155,50 +124,8 @@ const Header = () => {
                   </Tooltip>
                 </a>
               </Link>
-            )}
-
-            <Tooltip title='メニュー'>
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <SettingsIcon fontSize='large' />
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: '35px' }}
-              id='menu-appbar'
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
-            >
-              <MenuItem onClick={handleCloseUserMenu}>
-                <Typography textAlign='center'>
-                  {onDisplayName(currentUser)}
-                </Typography>
-              </MenuItem>
-              <Divider />
-              {headerMenu.map((menu: { title: string; link: string }) => (
-                <Link key={menu.title} href={menu.link}>
-                  <a>
-                    <MenuItem onClick={handleCloseUserMenu}>
-                      <Typography textAlign='center'>{menu.title}</Typography>
-                    </MenuItem>
-                  </a>
-                </Link>
-              ))}
-              <MenuItem onClick={handleCloseUserMenu}>
-                <Typography onClick={onSignOut} textAlign='center'>
-                  ログアウト
-                </Typography>
-              </MenuItem>
-            </Menu>
+            )} */}
+            <MenuIconButton />
           </Box>
         </Toolbar>
       </Container>

@@ -5,7 +5,6 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../firebase';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { authState, spinnerState } from '../../store';
-import SpinnerLoading from '../components/SpinnerLoading';
 import { Box, Button, FormControl, TextField } from '@mui/material';
 
 const Login = () => {
@@ -14,7 +13,7 @@ const Login = () => {
   const [user] = useAuthState(auth);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const setSpinner = useSetRecoilState<any>(spinnerState);
+  const setSpinner = useSetRecoilState(spinnerState);
 
   useEffect(() => {
     if (user) {
@@ -85,7 +84,6 @@ const Login = () => {
           ログイン
         </Button>
       </Box>
-      <SpinnerLoading />
     </Box>
   );
 };

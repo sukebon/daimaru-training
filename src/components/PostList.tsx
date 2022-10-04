@@ -85,7 +85,7 @@ const PostList: NextPage<Props> = ({ posts, articles }) => {
         </Box>
       ) : (
         <Box p={6} textAlign='center' fontSize='1.2rem'>
-          登録された記事がありません。
+          未読ページはありません。
         </Box>
       )}
     </Box>
