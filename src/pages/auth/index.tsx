@@ -16,15 +16,17 @@ import {
   orderBy,
   query,
   setDoc,
-  where,
 } from 'firebase/firestore';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { Users } from '../../../data';
 import { db } from '../../../firebase';
 
 const Auth = () => {
-  const users: any = Users;
+  const users: { uid: string; name: string; rank: number }[] = [];
   const [authorityUsers, setAuthorityUsers] = useState<any>();
+  const router = useRouter();
 
   useEffect(() => {
     const q = query(collection(db, 'authority'), orderBy('rank', 'asc'));
@@ -60,6 +62,7 @@ const Auth = () => {
               <TableCell>名前</TableCell>
               <TableCell>uid</TableCell>
               <TableCell>ランク</TableCell>
+              <TableCell></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -74,6 +77,11 @@ const Auth = () => {
                   </TableCell>
                   <TableCell>{user.uid}</TableCell>
                   <TableCell>{user.rank}</TableCell>
+                  <TableCell>
+                    <Link href={`/auth/${user.uid}`}>
+                      <Button>編集</Button>
+                    </Link>
+                  </TableCell>
                 </TableRow>
               )
             )}

@@ -9,15 +9,16 @@ import {
 } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
 import Link from 'next/link';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useRecoilState } from 'recoil';
 import { authState } from '../../store';
 import { signOut } from 'firebase/auth';
-import { auth } from '../../firebase';
-import { Users } from '../../data';
+import { auth, db } from '../../firebase';
+import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
 
 const MenuIconButton = () => {
   const user: any = auth.currentUser;
+  const [authorityUsers, setAuthorityUsers] = React.useState<any>();
   const [currentUser, setCurrentUser] = useRecoilState(authState);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
@@ -31,11 +32,26 @@ const MenuIconButton = () => {
     setAnchorElUser(null);
   };
 
+  // users一覧
+  useEffect(() => {
+    const q = query(collection(db, 'authority'), orderBy('rank', 'asc'));
+    const unsub = onSnapshot(q, (querySnapshot) => {
+      setAuthorityUsers(
+        querySnapshot.docs.map((doc) => ({
+          ...doc.data(),
+          id: doc.id,
+        }))
+      );
+    });
+  }, []);
+
   // ディスプレイネームを表示
   const onDisplayName = (userId: string) => {
-    const user: any = Users.find((user) => {
-      if (user.uid === userId) return user.name;
-    });
+    const user: any = authorityUsers?.find(
+      (user: { uid: string; name: string }) => {
+        if (user.uid === userId) return user.name;
+      }
+    );
     if (!user) return;
     return user.name;
   };
@@ -53,7 +69,7 @@ const MenuIconButton = () => {
   // メニューリスト
   const headerMenu = [
     { link: '/', title: 'トップページ' },
-    { link: '/profile', title: 'プロフィール編集' },
+    // { link: '/profile', title: 'プロフィール編集' },
   ];
 
   return (
@@ -81,8 +97,7 @@ const MenuIconButton = () => {
       >
         <MenuItem onClick={handleCloseUserMenu}>
           <Typography textAlign='center'>
-            {user?.displayName}
-            {/* {onDisplayName(currentUser)} */}
+            {onDisplayName(currentUser)}
           </Typography>
         </MenuItem>
         <Divider />
