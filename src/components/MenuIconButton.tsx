@@ -17,7 +17,6 @@ import { auth, db } from '../../firebase';
 import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
 
 const MenuIconButton = () => {
-  const user: any = auth.currentUser;
   const [authorityUsers, setAuthorityUsers] = React.useState<any>();
   const [currentUser, setCurrentUser] = useRecoilState(authState);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
@@ -47,11 +46,9 @@ const MenuIconButton = () => {
 
   // ディスプレイネームを表示
   const onDisplayName = (userId: string) => {
-    const user: any = authorityUsers?.find(
-      (user: { uid: string; name: string }) => {
-        if (user.uid === userId) return user.name;
-      }
-    );
+    const user = authorityUsers?.find((user: { uid: string; name: string }) => {
+      if (user.uid === userId) return user.name;
+    });
     if (!user) return;
     return user.name;
   };
@@ -63,7 +60,9 @@ const MenuIconButton = () => {
         console.log('logout');
         setCurrentUser('');
       })
-      .catch((err) => {});
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   // メニューリスト

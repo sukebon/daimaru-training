@@ -18,15 +18,13 @@ import {
   setDoc,
 } from 'firebase/firestore';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
-import { Users } from '../../../data';
+import { Users } from '../../../.data';
 import { db } from '../../../firebase';
 
 const Auth = () => {
-  const users: { uid: string; name: string; rank: number }[] = [];
+  const users: { uid: string; name: string; rank: number }[] = []; //Usersに変更して使う
   const [authorityUsers, setAuthorityUsers] = useState<any>();
-  const router = useRouter();
 
   useEffect(() => {
     const q = query(collection(db, 'authority'), orderBy('rank', 'asc'));
