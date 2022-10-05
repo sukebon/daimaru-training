@@ -27,7 +27,7 @@ import {
   spinnerState,
 } from '../../store';
 import { NextPage } from 'next';
-import { Users } from '../../data';
+import { Users } from '../../.data';
 
 type Props = {
   post: {

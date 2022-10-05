@@ -7,10 +7,15 @@ import { db } from '../../../firebase';
 
 const AuthId = () => {
   const router = useRouter();
-  const [profile, setProfile] = useState<any>({
-    name: '',
-    rank: '',
-  });
+  const [profile, setProfile] = useState<any>();
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const value = e.target.value;
+    const key = e.target.name;
+    setProfile({ ...profile, [key]: value });
+  };
 
   // user情報取得
   useEffect(() => {
@@ -23,14 +28,6 @@ const AuthId = () => {
     };
     getDocUser();
   }, [router.query.id]);
-
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const value = e.target.value;
-    const key = e.target.name;
-    setProfile({ ...profile, [key]: value });
-  };
 
   //user情報更新
   const updateProfile = async () => {
@@ -46,19 +43,28 @@ const AuthId = () => {
       <Box component='h1' mt={6} sx={{ fontSize: '1.2rem' }}>
         ユーザーページ
       </Box>
-      <Box display='flex' flexDirection='column'>
+      <Box
+        display='flex'
+        flexDirection='column'
+        maxWidth='sm'
+        sx={{ p: 2, backgroundColor: 'white', borderRadius: 2 }}
+      >
+        <Box>名前</Box>
         <TextField
+          sx={{ mt: 1 }}
           name='name'
-          value={profile.name}
+          value={profile?.name}
           onChange={handleInputChange}
         />
+        <Box sx={{ mt: 3 }}>順位</Box>
         <TextField
+          type='number'
+          sx={{ mt: 1 }}
           name='rank'
-          value={profile.rank}
+          value={profile?.rank}
           onChange={handleInputChange}
-          sx={{ mt: 3 }}
         />
-        <Button onClick={updateProfile} sx={{ mt: 3 }}>
+        <Button variant='contained' onClick={updateProfile} sx={{ mt: 3 }}>
           更新
         </Button>
       </Box>
