@@ -37,22 +37,26 @@ const PostId: NextPage<Props> = ({ post }) => {
 
   // 前のページと次のページのリンクを表示
   const onNextPrevButton = (index: number) => {
-    const currentIndex = posts
-      .map((post: { id: string }) => {
-        return post.id;
+    const newPosts = posts.filter((article: any) => {
+      if (article.category.categoryName === post.category.categoryName)
+        return true;
+    });
+    const currentIndex = newPosts
+      .map((article: { id: string }) => {
+        return article.id;
       })
       .indexOf(post.id);
 
     const nextPrevIndex = currentIndex + index;
 
-    if (posts.length <= nextPrevIndex || 0 > nextPrevIndex) return '';
+    if (newPosts.length <= nextPrevIndex || 0 > nextPrevIndex) return '';
     return (
       <>
-        <Link href={`/posts/${posts[nextPrevIndex].id}`}>
+        <Link href={`/posts/${newPosts[nextPrevIndex].id}`}>
           <a>
             <Box display='flex' alignItems='center'>
               {index === -1 && <ChevronLeftIcon />}
-              {posts[nextPrevIndex].title}
+              {newPosts[nextPrevIndex].title}
               {index === 1 && <ChevronRightIcon />}
             </Box>
           </a>

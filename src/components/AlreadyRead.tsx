@@ -8,12 +8,15 @@ import {
   collection,
   doc,
   getDoc,
+  onSnapshot,
+  orderBy,
+  query,
   serverTimestamp,
   setDoc,
   Timestamp,
   updateDoc,
 } from 'firebase/firestore';
-import { db } from '../../firebase';
+import { auth, db } from '../../firebase';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
 import {
@@ -43,6 +46,7 @@ const AlreadyRead: NextPage<Props> = ({ post }) => {
   const alreadyReadList = useRecoilValue(alreadyReadListState);
   const [includingMembers, setIncludingMembers] = useState<boolean>();
   const [readMembers, setReadMembers] = useState([]);
+  const [authorityUsers, setAuthorityUsers] = useState<any>();
   const setSpinner = useSetRecoilState(spinnerState);
 
   // 既読にする
@@ -97,11 +101,24 @@ const AlreadyRead: NextPage<Props> = ({ post }) => {
 
   // ディスプレイネームを表示
   const onDisplayName = (userId: string) => {
-    const user: any = Users.find((user) => {
-      if (user.uid === userId) return user.name;
+    const user = authorityUsers?.find((user: { uid: string }) => {
+      if (user.uid === userId) return user;
     });
-    return user.name;
+    return user?.name;
   };
+
+  // users一覧
+  useEffect(() => {
+    const q = query(collection(db, 'authority'), orderBy('rank', 'asc'));
+    const unsub = onSnapshot(q, (querySnapshot) => {
+      setAuthorityUsers(
+        querySnapshot.docs.map((doc) => ({
+          ...doc.data(),
+          id: doc.id,
+        }))
+      );
+    });
+  }, []);
 
   return (
     <>

@@ -95,6 +95,15 @@ const MenuIconButton = () => {
             </a>
           </Link>
         ))}
+        {currentUser === 'EPJUZ2xqdsY8X28anovOwEylGBl1' && (
+          <Link href='/auth'>
+            <a>
+              <MenuItem onClick={handleCloseUserMenu}>
+                <Typography textAlign='center'>権限</Typography>
+              </MenuItem>
+            </a>
+          </Link>
+        )}
         <MenuItem onClick={handleCloseUserMenu}>
           <Typography onClick={onSignOut} textAlign='center'>
             ログアウト
