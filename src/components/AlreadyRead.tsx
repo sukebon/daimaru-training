@@ -1,6 +1,6 @@
-import { Button, Typography } from '@mui/material';
-import { Box } from '@mui/system';
-import React, { useEffect, useState } from 'react';
+import { Button, Typography } from "@mui/material";
+import { Box } from "@mui/system";
+import React, { useEffect, useState } from "react";
 import {
   addDoc,
   arrayRemove,
@@ -15,9 +15,9 @@ import {
   setDoc,
   Timestamp,
   updateDoc,
-} from 'firebase/firestore';
-import { auth, db } from '../../firebase';
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+} from "firebase/firestore";
+import { auth, db } from "../../firebase";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 
 import {
   alreadyReadListState,
@@ -25,9 +25,8 @@ import {
   authState,
   postsState,
   spinnerState,
-} from '../../store';
-import { NextPage } from 'next';
-import { Users } from '../../.data';
+} from "../../store";
+import { NextPage } from "next";
 
 type Props = {
   post: {
@@ -51,11 +50,11 @@ const AlreadyRead: NextPage<Props> = ({ post }) => {
 
   // 既読にする
   const addMemberPost = async () => {
-    const result = confirm('既読にして宜しいでしょうか');
+    const result = confirm("既読にして宜しいでしょうか");
     if (!result) return;
     try {
       setSpinner(true);
-      const postRef = doc(db, 'articles', `${post.id}`);
+      const postRef = doc(db, "articles", `${post.id}`);
       const docSnap = await getDoc(postRef);
       if (docSnap.exists()) {
         await updateDoc(postRef, {
@@ -67,7 +66,7 @@ const AlreadyRead: NextPage<Props> = ({ post }) => {
           createdAt: serverTimestamp(),
         });
       }
-      const docRef = await addDoc(collection(db, 'alreadyReadList'), {
+      const docRef = await addDoc(collection(db, "alreadyReadList"), {
         uid: currentUser,
         postId: post.id,
         createdAt: serverTimestamp(),
@@ -109,7 +108,7 @@ const AlreadyRead: NextPage<Props> = ({ post }) => {
 
   // users一覧
   useEffect(() => {
-    const q = query(collection(db, 'authority'), orderBy('rank', 'asc'));
+    const q = query(collection(db, "authority"), orderBy("rank", "asc"));
     const unsub = onSnapshot(q, (querySnapshot) => {
       setAuthorityUsers(
         querySnapshot.docs.map((doc) => ({
@@ -124,17 +123,17 @@ const AlreadyRead: NextPage<Props> = ({ post }) => {
     <>
       {!includingMembers && (
         <Box
-          width='100%'
-          bgcolor='white'
+          width="100%"
+          bgcolor="white"
           p={3}
           mt={3}
-          textAlign='center'
-          border='1px solid #e1e1e1'
-          sx={{ overflowWrap: 'break-word' }}
+          textAlign="center"
+          border="1px solid #e1e1e1"
+          sx={{ overflowWrap: "break-word" }}
         >
           <Typography>確認したら既読ボタンを押してください。</Typography>
           <Button
-            variant='contained'
+            variant="contained"
             sx={{ mt: 1 }}
             onClick={() => {
               addMemberPost();
@@ -146,21 +145,21 @@ const AlreadyRead: NextPage<Props> = ({ post }) => {
       )}
       {readMembers.length > 0 && (
         <Box
-          width='100%'
-          bgcolor='white'
+          width="100%"
+          bgcolor="white"
           p={3}
           pt={0}
           mt={3}
-          textAlign='center'
-          border='1px solid #e1e1e1'
-          sx={{ overflowWrap: 'break-word' }}
+          textAlign="center"
+          border="1px solid #e1e1e1"
+          sx={{ overflowWrap: "break-word" }}
         >
-          <Box component='h3' textAlign='left'>
+          <Box component="h3" textAlign="left">
             研修済み
           </Box>
           {readMembers.map(
             (member: { id: string; uid: string; createdAt: Timestamp }) => (
-              <Box key={member.id} display='flex'>
+              <Box key={member.id} display="flex">
                 <Box mr={3}>{onDisplayName(member.uid)}</Box>
                 <Box>
                   {member.createdAt &&
