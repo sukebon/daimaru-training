@@ -41,7 +41,8 @@ type Props = {
 
 const AlreadyRead: NextPage<Props> = ({ post }) => {
   const currentUser = useRecoilValue(authState);
-  const articles = useRecoilValue<any>(articlesState);
+  // const articles = useRecoilValue<any>(articlesState);
+  const [articles, setArticles] = useRecoilState<any>(articlesState);
   const alreadyReadList = useRecoilValue(alreadyReadListState);
   const [includingMembers, setIncludingMembers] = useState<boolean>();
   const [readMembers, setReadMembers] = useState([]);
@@ -88,15 +89,31 @@ const AlreadyRead: NextPage<Props> = ({ post }) => {
     setReadMembers(members);
   }, [alreadyReadList, post.id]);
 
+  // 既読の記事一覧を取得
+  useEffect(() => {
+    const q = query(collection(db, "articles"), orderBy("createdAt", "desc"));
+    onSnapshot(q, (querySnapshot) => {
+      setArticles(
+        querySnapshot.docs.map((doc) => ({
+          ...doc.data(),
+          id: doc.id,
+        }))
+      );
+    });
+  }, []);
+
   // currentUserが既読リストに含まれているか確認
   useEffect(() => {
     const article: any = articles.find((article: { id: string }) => {
-      if (article.id == post.id) return article;
+      if (article.id === post.id) return article;
     });
-    if (!article) return;
+    if (!article) {
+      setIncludingMembers(false);
+      return;
+    }
     const result = article.members.includes(currentUser);
     setIncludingMembers(result);
-  }, [currentUser, articles, post.id]);
+  }, [currentUser, articles, post]);
 
   // ディスプレイネームを表示
   const onDisplayName = (userId: string) => {
