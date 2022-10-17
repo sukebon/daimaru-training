@@ -1,15 +1,15 @@
-import type { NextPage } from 'next';
-import { useEffect, useState } from 'react';
-import { auth, db } from '../../firebase';
-import Head from 'next/head';
+import type { NextPage } from "next";
+import { useEffect, useState } from "react";
+import { auth, db } from "../../firebase";
+import Head from "next/head";
 import {
   alreadyReadListState,
   articlesState,
   authState,
   categoriesState,
   postsState,
-} from '../../store';
-import { useRecoilState, useRecoilValue } from 'recoil';
+} from "../../store";
+import { useRecoilState, useRecoilValue } from "recoil";
 import {
   collection,
   deleteDoc,
@@ -17,9 +17,9 @@ import {
   onSnapshot,
   orderBy,
   query,
-} from 'firebase/firestore';
-import { Box, Container } from '@mui/material';
-import PostList from '../components/PostList';
+} from "firebase/firestore";
+import { Box, Container } from "@mui/material";
+import PostList from "../components/PostList";
 
 const Home: NextPage = ({ postsApi, categoriesApi }: any) => {
   const currentUser = useRecoilValue(authState);
@@ -39,8 +39,8 @@ const Home: NextPage = ({ postsApi, categoriesApi }: any) => {
   // 既読した個人情報一覧を取得
   useEffect(() => {
     const q = query(
-      collection(db, 'alreadyReadList'),
-      orderBy('createdAt', 'desc')
+      collection(db, "alreadyReadList"),
+      orderBy("createdAt", "desc")
     );
     onSnapshot(q, (querySnapshot) => {
       setAlreadyReadList(
@@ -54,7 +54,7 @@ const Home: NextPage = ({ postsApi, categoriesApi }: any) => {
 
   // 既読の記事一覧を取得
   useEffect(() => {
-    const q = query(collection(db, 'articles'), orderBy('createdAt', 'desc'));
+    const q = query(collection(db, "articles"), orderBy("createdAt", "desc"));
     onSnapshot(q, (querySnapshot) => {
       setArticles(
         querySnapshot.docs.map((doc) => ({
@@ -67,9 +67,9 @@ const Home: NextPage = ({ postsApi, categoriesApi }: any) => {
 
   //未読記事一覧
   useEffect(() => {
-    const unReadIdArray: string[] = articles
+    const readIdArray: string[] = articles
       .filter((article: { members: string[] }) => {
-        if (!article.members.includes(currentUser)) {
+        if (article.members.includes(currentUser)) {
           return article;
         }
       })
@@ -78,7 +78,7 @@ const Home: NextPage = ({ postsApi, categoriesApi }: any) => {
       });
 
     const filterPosts = posts.filter((post: { id: string }) => {
-      if (unReadIdArray.includes(post.id)) return post;
+      if (!readIdArray.includes(post.id)) return post;
     });
 
     setUnReadPosts(filterPosts);
@@ -96,12 +96,12 @@ const Home: NextPage = ({ postsApi, categoriesApi }: any) => {
       });
 
       surplusId.forEach(async (article: { id: string }) => {
-        await deleteDoc(doc(db, 'articles', `${article.id}`));
+        await deleteDoc(doc(db, "articles", `${article.id}`));
 
         alreadyReadList.forEach(
           async (list: { postId: string; id: string }) => {
             if (list.postId === article.id) {
-              await deleteDoc(doc(db, 'alreadyReadList', `${list.id}`));
+              await deleteDoc(doc(db, "alreadyReadList", `${list.id}`));
             }
             return;
           }
@@ -118,8 +118,8 @@ const Home: NextPage = ({ postsApi, categoriesApi }: any) => {
           <Head>
             <title>大丸白衣 研修サイト</title>
           </Head>
-          <Container maxWidth='md'>
-            <Box component='h1' mt={6} sx={{ fontSize: '1.2rem' }}>
+          <Container maxWidth="md">
+            <Box component="h1" mt={6} sx={{ fontSize: "1.2rem" }}>
               トップページ
             </Box>
             <PostList posts={unReadPosts} articles={articles} />
@@ -137,12 +137,12 @@ export async function getStaticProps() {
   const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
   const option: {} = {
     headers: {
-      'X-MICROCMS-API-KEY': API_KEY,
+      "X-MICROCMS-API-KEY": API_KEY,
     },
   };
   const [resPosts, resCategories] = await Promise.all([
-    fetch(BASE_URL + 'posts', option),
-    fetch(BASE_URL + 'categories', option),
+    fetch(BASE_URL + "posts", option),
+    fetch(BASE_URL + "categories", option),
   ]);
 
   const jsonPosts = await resPosts.json();
